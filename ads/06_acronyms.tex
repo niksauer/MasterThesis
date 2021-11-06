@@ -1,0 +1,37 @@
+%!TEX root = ../main.tex
+
+\addchap{\langabkverz}
+%nur verwendete Akronyme werden letztlich im Abkürzungsverzeichnis des Dokuments angezeigt
+%Verwendung:
+%		\ac{Abk.}   --> fügt die Abkürzung ein, beim ersten Aufruf wird zusätzlich automatisch die ausgeschriebene Version davor eingefügt bzw. in einer Fußnote (hierfür muss in header.tex \usepackage[printonlyused,footnote]{acronym} stehen) dargestellt
+%		\acs{Abk.}   -->  fügt die Abkürzung ein
+%		\acf{Abk.}   --> fügt die Abkürzung UND die Erklärung ein
+%		\acl{Abk.}   --> fügt nur die Erklärung ein
+%		\acp{Abk.}  --> gibt Plural aus (angefügtes 's'); das zusätzliche 'p' funktioniert auch bei obigen Befehlen
+%	siehe auch: http://golatex.de/wiki/%5Cacronym
+%
+
+% acronym settings
+\makeatletter
+\newif\if@in@acrolist
+\AtBeginEnvironment{acronym}{\@in@acrolisttrue}
+\newrobustcmd{\LU}[2]{\if@in@acrolist#1\else#2\fi}
+
+\newcommand{\ACF}[1]{{\@in@acrolisttrue\acf{#1}}}
+\makeatother
+
+% start acronyms
+\begin{acronym}[HATEOAS ]
+
+%\setlength{\itemsep}{-\parsep}
+
+\acro{EBP}{\acl{EB} Platform}
+\acro{EB}{EnergieBroker}
+\acro{EEG}{Renewable Energy Sources Act (German: \textit{Erneuerbare-Energien-Gesetz})}
+\acro{EV}{Electric Vehicle}
+\acro{HATEOAS}{Hypermedia as the Engine of Application State}
+\acro{PVS}{Photovoltaic System}
+\acrodefplural{PVS}[PVSes]{Photovoltaic Systems}
+\acro{REST}{Representational State Transfer}
+
+\end{acronym}

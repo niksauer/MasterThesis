@@ -1,0 +1,200 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                   Einstellungen
+%
+% Hier können alle relevanten Einstellungen für diese Arbeit gesetzt werden.
+% Dazu gehören Angaben u.a. über den Autor sowie Formatierungen.
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Sprache %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Aktuell sind Deutsch und Englisch unterstützt.
+%% Es werden nicht nur alle vom Dokument erzeugten Texte in
+%% der entsprechenden Sprache angezeigt, sondern auch weitere
+%% Aspekte angepasst, wie z.B. die Anführungszeichen und
+%% Datumsformate.
+\setzesprache{en} % oder de
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Angaben  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Die meisten der folgenden Daten werden auf dem
+%% Deckblatt angezeigt, einige auch im weiteren Verlauf
+%% des Dokuments.
+\setzematrikelnr{1209772}
+\setzekurs{}
+\setzetitel{Design, Implementation and Evaluation of a System to Create a Data Set Supporting Research in the EnergieBroker Platform}
+\setzedatumAbgabe{January 11\textsuperscript{th}, 2022}
+\setzefirma{}
+\setzefirmenort{}
+\setzeabgabeort{Wiesbaden}
+\setzeabschluss{Master of Science}
+\setzestudiengang{Computer Science}
+\setzemanager{}
+\setzebetreuer{Johannes Kaeppel}
+\setzegutachter{Prof. Dr. Heinz Werntges}
+\setzezweitgutachter{Prof. Dr. Robert Kaiser}
+\setzezeitraum{6 Months}
+\setzearbeit{Master Thesis}
+\setzeautor{Niklas Sauer}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Literaturverzeichnis %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Bei Fehlern während der Verarbeitung bitte in ads/header.tex bei der
+%% Einbindung des Pakets biblatex (ungefähr ab Zeile 110,
+%% einmal für jede Sprache), biber in bibtex ändern.
+\newcommand{\ladeliteratur}{%
+\addbibresource{bibliography.bib}
+%\addbibresource{weitereDatei.bib}
+}
+%% Zitierstil
+%% siehe: http://ctan.mirrorcatalogs.com/macros/latex/contrib/biblatex/doc/biblatex.pdf (3.3.1 Citation Styles)
+%% mögliche Werte z.B numeric-comp, alphabetic, authoryear
+\setzezitierstil{numeric-comp}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Layout %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Verschiedene Schriftarten
+% laut nag Warnung: palatino obsolete, use mathpazo, helvet (option scaled=.95), courier instead
+\setzeschriftart{lmodern} % palatino oder goudysans, lmodern, libertine
+
+%% Paket um Textteile drehen zu können
+%\usepackage{rotating}
+%% Paket um Seite im Querformat anzuzeigen
+%\usepackage{lscape}
+
+%% Seitenränder
+\setzeseitenrand{2.5cm}
+
+%% Abstand vor Kapitelüberschriften zum oberen Seitenrand
+\setzekapitelabstand{20pt}
+
+%% Spaltenabstand
+\setzespaltenabstand{10pt}
+%%Zeilenabstand innerhalb einer Tabelle
+\setzezeilenabstand{1.5}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Verschiedenes  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Farben (Angabe in HTML-Notation mit großen Buchstaben)
+\newcommand{\ladefarben}{%
+	\definecolor{LinkColor}{HTML}{00007A}
+	\definecolor{ListingBackground}{HTML}{FCF7DE}
+}
+%% Mathematikpakete benutzen (Pakete aktivieren)
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+
+%% Programmiersprachen Highlighting (Listings)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Eigenes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Hier können Ergänzungen zur Präambel vorgenommen werden (eigene Pakete, Einstellungen)
+
+%%%%%%% Package Includes %%%%%%%
+\usepackage[section]{placeins}
+\usepackage{pgfplots}
+\usepackage{multirow}
+\usepackage[toc, page]{appendix}
+%\usepackage[explicit]{titlesec}
+\usepackage{rotating}
+
+\usepackage{tabularx}
+\usepackage{siunitx}
+
+\DeclareSIQualifier\peak{p}
+\DeclareSIUnit\wattp{\watt\peak}
+
+% continuous footnote numbering
+\usepackage{chngcntr}
+\counterwithout{footnote}{chapter}
+
+% hide text
+\newcommand{\hide}[1]{\ignorespaces}
+
+% nameref for description
+\makeatletter
+\newcommand\storedescriptionlabel[1]{%
+  \let\orglabel\label
+  \let\label\@gobble
+  \phantomsection
+  \edef\@currentlabel{#1}%
+  \let\label\orglabel
+  #1}
+\makeatother
+
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+
+% bordered image
+\newcommand{\munepsfig}[5][scale=1.0]{
+    \begin{figure}[!htbp]
+        \centering
+        \vspace{2mm}
+        \setlength{\fboxrule}{#4}
+        \setlength{\fboxsep}{0pt}
+        \framebox{\includegraphics[#1]{#2}}
+        \caption{#3}
+        \label{fig:#5}
+    \end{figure}
+}
+
+% custom ref label
+\makeatletter
+\newcommand{\labeltext}[3][]{%
+    \@bsphack%
+    \csname phantomsection\endcsname% in case hyperref is used
+    \def\tst{#1}%
+    \def\labelmarkup{}% How to markup the label itself
+    %\def\refmarkup{\labelmarkup}% How to markup the reference
+    \def\refmarkup{}%
+    \ifx\tst\empty\def\@currentlabel{\refmarkup{#2}}{\label{#3}}%
+    \else\def\@currentlabel{\refmarkup{#1}}{\label{#3}}\fi%
+    \@esphack%
+    \labelmarkup{#2}% visible printed text.
+}
+\makeatother
+
+% multi column
+\usepackage{etoolbox,refcount}
+\usepackage{multicol}
+
+\newcounter{countitems}
+\newcounter{nextitemizecount}
+\newcommand{\setupcountitems}{%
+  \stepcounter{nextitemizecount}%
+  \setcounter{countitems}{0}%
+  \preto\item{\stepcounter{countitems}}%
+}
+\makeatletter
+\newcommand{\computecountitems}{%
+  \edef\@currentlabel{\number\c@countitems}%
+  \label{countitems@\number\numexpr\value{nextitemizecount}-1\relax}%
+}
+\newcommand{\nextitemizecount}{%
+  \getrefnumber{countitems@\number\c@nextitemizecount}%
+}
+\newcommand{\previtemizecount}{%
+  \getrefnumber{countitems@\number\numexpr\value{nextitemizecount}-1\relax}%
+}
+\makeatother
+\newenvironment{AutoMultiColItemize}{%
+\ifnumcomp{\nextitemizecount}{>}{3}{\begin{multicols}{2}}{}%
+\setupcountitems\begin{itemize}}%
+{\end{itemize}%
+\unskip\computecountitems\ifnumcomp{\previtemizecount}{>}{3}{\end{multicols}}{}}
+
+% fix appendices font
+\let\appendixpagenameorig\appendixpagename
+\renewcommand{\appendixpagename}{\sffamily\appendixpagenameorig}
+
+% rangeref
+\newcommand{\rangelabelstart}[1]{\label{#1START}}
+\newcommand{\rangelabelend}[1]{\label{#1END}}
+
+\newcommand{\rangeref}[1]{\pageref{#1START}--\pageref{#1END}}
+
+% autoref
+\def\Appendixautorefname{Appendix}%
+%\def\Hfootnoteautorefname{Footnote}%
