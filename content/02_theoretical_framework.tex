@@ -4,6 +4,137 @@
 \label{chp:theoretical-framework}
 
 \section{Microservice Architecture}
+\label{sec:microservice-architecture}
+
+Popularized by companies like Amazon, Netflix, Uber, LinkedIn and SoundCloud, the microservice architecture has emerged as a pattern to avoid the problems of conventional monolithic designs \cite[p.~847]{singh2017container} \cite[p.~584]{villamizar2015evaluating}. This section provides an overview to the problems faced in monolithic applications, distinguishes the microservice architecture from a traditional \acl{SOA} and lays out its core principles, while noting some of the newly introduced challenges.
+
+
+\subsection{The Monolith Problem}
+\label{sec:monolith-problem}
+
+A monolith is a software application whose modules cannot be executed independently \cite[p.~1]{dragoni2017microservices}. Hence, a monolith is characterized by requiring to be deployed as a united solution \cite[p.~24]{dmitry2014micro}. Based on this definition, a set of obstructive characteristics inherent to monolithic applications can be derived:
+
+\begin{description}
+  \item[Maintainability]
+  \hfill \\
+  When developing an application with a single large codebase, it naturally becomes harder to maintain and comprehend \cite[p.~2]{dragoni2017microservices}. The latter is especially true for beginners, slowing down their productivity \cite[p.~24]{dmitry2014micro}. Further, refactoring changes may touch many parts of the software which might lead to a situation in which refactoring is ignored because it becomes too risky \cite[p.~35]{kalske2017challenges}.
+
+ \item[Dependencies and technology lock-in]
+  \hfill \\
+  Monoliths typically suffer from the \enquote{dependency hell} problem where an application's modules depend on conflicting versions of a shared library \cite[p.~2]{dragoni2017microservices}. In cases where this is solved, the likelihood of having to make many changes to update to a newer version of a library again increases with a growing codebase. Next to that, it becomes very difficult to change the technology stack, leading to a lock-in and forcing developers to use the same language in every problem domain \cite[p.~24]{dmitry2014micro} \cite[p.~2]{dragoni2017microservices}.
+
+  \item[Deployment]
+  \hfill \\
+  Rolling out a new application version requires the complete set of services to be restarted, regardless of whether a service has been altered or not \cite[p.~2]{dragoni2017microservices}. Similarly, failure of one service leads to downtime across all services \cite[p.~970]{vayghan2018deploying}. The deployment can therefore be viewed as a single point of failure \cite[p.~584]{villamizar2015evaluating}. Moreover, deployments are likely sub-optimal due to conflicting resource requirements (e.g. \acs{CPU} vs. memory-intensive). Developers often have to compromise with a one-size fits all configuration \cite[p.~2]{dragoni2017microservices}.
+
+  \item[Scaling]
+  \hfill \\
+  By combining multiple services into a single process, scaling can lead to resource wastage since the whole application needs to be scaled up even if an increase in traffic stresses only a subset of modules \cite[p.~850]{singh2017container} \cite[p.~2]{dragoni2017microservices}. Less popular services consume unnecessary (idle) amounts of resources \cite[p.~584]{villamizar2015evaluating}. Setting appropriate scaling thresholds also becomes more challenging because different components may have different resource requirements \cite[p.~24]{dmitry2014micro}.
+\end{description}
+
+\citeauthor{kalske2017challenges}, however, acknowledge that the monolith approach might be the correct choice if the codebase is relatively small or the need for fine-grained scaling has not come up \cite[pp.~34,~36]{kalske2017challenges}. \citeauthor{villamizar2015evaluating} add that monoliths are faster to set up \cite[p.~589]{villamizar2015evaluating}. Empirically, most organizations start with something big and slowly transition to a decomposed architecture when scaling problems arise \cite[p.~113]{thones2015microservices} \cite[p.~590]{villamizar2015evaluating}. Yet, it can be argued that an organization should spend more time on the design upfront since it is easy to introduce tight coupling, hereby hindering future refactoring endeavors \cite[p.~34]{kalske2017challenges}.
+
+
+\subsection{Definition}
+\label{sec:microservice-definition}
+
+A microservice-based application is one in which the core functionality has been decomposed into many small units that can be independently developed and deployed \cite[p.~43]{khan2017key} \cite[p.~970]{vayghan2018deploying}. Each unit, a \textit{microservice}, is modeled around a single, clearly defined set of closely related functionalities that can be used independently over the network through a well-defined interface~\footnote{\citeauthor{cerny2018contextual} draw a comparison to three Unix ideas: a program should fulfill only one task well, be able to work with other programs and use a universal interface \cite[p.~31]{cerny2018contextual}.} \cite[p.~56]{taibi2018definition} \cite[p.~176]{vayghan2019microservice} \cite[p.~30]{cerny2018contextual}. This definition implies that microservices:
+
+\begin{itemize}
+  \item use independent codebases, thus can build on different technology stacks
+  \item run in distinct processes, thus can fail and scale independently
+  \item are decoupled but can be used as building blocks to form larger services
+\end{itemize}
+
+
+\subsection{Decomposition Techniques}
+\label{sec:microservice-decomposition}
+
+Spitting an application into services should happen along the lines of related processes that can be carried out in isolation. It is not about arbitrarily distributing features across services \cite[p.~61]{taibi2018definition}. As in traditional software engineering, the term cohesiveness is used to indicate that a service implements only functionalities strongly related to the concern that it is meant to model \cite[p.~2]{dragoni2017microservices}. Various techniques are cited to determine the breadth of concern:
+
+\begin{description}
+  \item[\acl{SRP}]
+  \hfill \\
+  Defines a responsibility of a class as a reason to change and states that a class should only have one such reason \cite[p.~36]{messina2016simplified} \cite[p.~116]{thones2015microservices}. Is analogously applied to microservices. Leads to a large amount of services.
+
+  \item[Y-axis of \gls{scale cube}]
+  \hfill \\
+  Splits an application into distinct sets of related functions. Each set is implemented by a microservice. In a verb-based approach, sets consist of a single function that covers a specific use case, whereas the noun-based approach creates sets of functions responsible for all operations related to a particular entity \cite[p.~36]{messina2016simplified}. Leads to large and medium amount of services, respectively.
+
+  \item[\acl{DDD}]
+  \hfill \\
+  Refers to the application's problem space, i.e. the business, as the domain. This domain consists of multiple subdomains (e.g. product catalog, order management). Each subdomain is represented by a microservice\todo{add citation} \cite[p.~3]{balalaie2016microservices}. Leads to a small amount of services.
+\end{description}
+
+Irrespective of the technique chosen, the overall goal should be to minimize later interface changes, i.e. to establish proper service contracts \cite[p.~26]{dmitry2014micro}.
+
+
+\subsection{Service Registry Pattern}
+\label{sec:service-registry-pattern}
+
+The law of conservation of complexity states that the complexity of a large system does not vanish when the system is broken up into smaller pieces. Instead, the complexity is pushed to the interactions between these pieces \cite[p.~38]{messina2016simplified} \cite[p.~114]{thones2015microservices}. Applied to microservice-based applications, this means that developers need to deal with the challenges innate to distributed systems \cite[p.~24]{dmitry2014micro} \cite[p.~589]{villamizar2015evaluating}. One such challenge is the fact that services can no longer be invoked through language level method calls but rather only through the network. Moreover, given the need for scaling, clients are now required to make requests to a dynamically changing set of service instances. And since it is unfeasible to run these instances at fixed locations~\footnote{In the event of a network partition, a standard recovery process would attempt to restart a service in the healthy partition, thus leading to a new network location for this service.}, a pattern known as the service registry is commonly employed \cite[p.~37]{messina2016simplified}.
+
+A service registry acts as a database of services, storing the various instances along their locations, i.e. the \acs{IP} address and port number. Instances are added on startup and removed on shutdown. Keeping this in mind, two types of service discovery mechanisms are distinguished \cite[p.~46]{khan2017key}:
+
+\begin{description}
+  \item[Client-side]
+  \hfill \\
+  To contact a service, clients obtain the locations of all service instances by querying the registry. The client then needs to perform a load balancing algorithm to decide which instance will be contacted.
+
+  \item[Server-side]
+  \hfill \\
+  To contact a service, clients make a request to the service's load balancer which runs at a well known location. This load balancer queries the registry and forwards the request to an available instance.
+\end{description}
+
+In any case, the service registry is a critical component and thus, must be highly available.
+
+
+\subsection{\acs{API} Gateway Pattern}
+\label{sec:api-gateway-pattern}
+
+Depending on the decomposition technique chosen (see~\autoref{sec:microservice-decomposition}), microservices might provide very fine-grained \acsp{API}. In turn, this means that clients may need to interact with multiple different services to carry out a high-level business process. To hide this complexity from clients and ensure consistent behavior, a pattern known as the \acs{API} gateway is employed.
+
+An \acs{API} gateway represents the single entrypoint for all clients in which some requests are simply proxied while others fan out to and consume multiple services. In the latter case, gateways can be viewed as orchestrators and as such, typically do not have persistence layers \cite[p.~585]{villamizar2015evaluating}. They may, however, cache responses\todo{add citation}. Another important task in orchestrating multiple microservices is managing distributed transactions~\footnote{Distributed transactions are commonly implemented using the two-phase commit protocol. The no-\acs{ACID} transaction type has also been proposed for this context, which is known as a compensation transaction \cite[p.~32]{cerny2018contextual}.}, i.e. ensuring atomicity guarantees for a set of distributed resources \cite[p.~32]{cerny2018contextual}. Finally, gateways may also deal with generic features such as authentication and authorization or implement the circuit breaker pattern to prevent a service failure from cascading to other services \cite[p.~41]{kalske2017challenges} \cite[p.~37]{messina2016simplified}.
+
+It shall be noted that gateways incur a performance penalty because they introduce an additional network hop \cite[p.~37]{messina2016simplified}. This is generally true for proxying gateways. Orchestrating gateways, on the other hand, have the potential to decrease latency since the various requests being collapsed now already originate from the target network\todo{add citation}. In both cases, the performance degradation will heavily depend on the system's interconnectedness \cite[p.~9]{dragoni2017microservices}.
+
+
+\subsection{Database-per-Service Pattern}
+\label{sec:database-per-service-pattern}
+
+To keep microservices loosely coupled, a pattern known as database-per-service is employed. This pattern calls for each microservice to have its own database, compared to sharing one across multiple services. Sharing is achieved by making the data accessible via the service's \acs{API} \cite[p.~36]{messina2016simplified} \cite[p.~59]{taibi2018definition}. \citeauthor{messina2016simplified} discern between three levels of pattern conformity \cite[p.~37]{messina2016simplified}:
+
+\begin{description}
+  \item[Private tables]
+  \hfill \\
+  Each service has a set of tables private to that service.
+
+  \item[Private schema]
+  \hfill \\
+  Each service has a database schema private to that service.
+
+  \item[Private database]
+  \hfill \\
+  Each service has its own database.
+\end{description}
+
+While this pattern contributes to service intimacy, it comes at the cost of having to redefine data models and restate business rules across services~\footnote{In \acl{DDD}, the concept of a Bounded Context describes that services operate with business objects in a specific context and therefore, only need to model a subset of the global object's attributes \cite[p.~30]{cerny2018contextual}.} \cite[p.~30]{cerny2018contextual}.
+
+
+\subsection{Delineation from \acl{SOA}}
+\label{sec:soa-microservice-comparison}
+
+Historically, the complexity of monolithic applications (see~\autoref{sec:monolith-problem}) has already been addressed using different \acf{SOA} approaches that also decompose a large system into many smaller services. Academia, however, is undecided whether microservices should be considered as a subset or superset of \acp{SOA} or whether it constitutes a new, distinct idea \cite[pp.~584--585]{villamizar2015evaluating} \cite[p.~30]{cerny2018contextual}. The systematic mapping study conducted by \citeauthor{cerny2018contextual} in \cite{cerny2018contextual} spends a great deal on contrasting the two architectures. A short summary is given in the following.
+
+In both approaches, services cooperate to provide functionality for the overall system. However, the path to achieving this goal is different. This is most obvious when looking at the interaction patterns between the services involved. \acp{SOA} rely on orchestration, whereas microservice-based applications prefer choreography. The former expects a centralized business process to coordinate activities across services and combine the outcomes, whereas the latter expects individual services to collaborate based on their interface contracts. Orchestration differs from choreography with respect to where the logic that controls the interactions should reside. The two terms describe a centralized and decentralized approach hereof, respectively.
+
+An important remark that \citeauthor{cerny2018contextual} make, is that orchestration through an integration layer, such as a messaging bus, oftentimes leads to a situation in which the system parties, i.e. the services, agree on a standardized representation of the business objects they exchange. The system ends up with one kind of business object each. This is known as a canonical data modal. The danger being that a change in one of the business objects necessitates changes in all of the services that deal with this object. As a result, deployments in a \ac{SOA} again happen in a monolithic fashion. In the microservice architecture, such a change can at most propagate to the \acs{API} gateways (comp.~\autoref{sec:api-gateway-pattern}), though this is less likely because gateways integrate services based on their interfaces, not on their models.
+
+Lastly, albeit obvious, the biggest drawback of \acp{SOA} and their centralized orchestration model must be stated. Having a centralized business process integrate all services again entails having a single point of failure.
+
+\subsection{Operational Benefits and Challenges}
+
+
 
 \section{Virtualization}
 \subsection{Hypervisor-based}
