@@ -132,33 +132,98 @@ An important remark that \citeauthor{cerny2018contextual} make, is that orchestr
 
 Lastly, albeit obvious, the biggest drawback of \acp{SOA} and their centralized orchestration model must be stated. Having a centralized business process integrate all services again entails having a single point of failure.
 
-\subsection{Operational Benefits and Challenges}
+
+\section{OS-level Virtualization}
+\label{sec:os-level-virtualization}
+
+Virtualization describes the act of creating a virtual version of something \cite[p.~2]{celesti2016exploring}. In the context of computing, it specifically refers to hardware resources such as \acs{CPU}, memory, storage or network devices to create complete virtual instances of computer systems \cite[p.~21]{da2018containers}. This section sheds light on the motivation behind virtualization, gives a brief overview of the traditional approach hereto and focuses on a more recent and lightweight alternative in the remainder.
 
 
+\subsection{The Need for Virtualization}
+\label{sec:virtualization-motivation}
 
-\section{Virtualization}
-\subsection{Hypervisor-based}
-\subsection{Container-based}
+Server consolidation attempts to maximize resource utilization, while also reducing costs through energy savings~\footnote{About 10\% of the world's energy consumption stems from data center operations \cite[p.~1]{scheepers2014virtualization}. If resources can be used more efficiently, carbon emissions could be lowered.}\todo{update footnote figure and citation} \cite[p.~233]{xavier2013performance} \cite[p.~2]{eder2016hypervisor}. This is achieved by using fewer physical servers to host the same number of applications. But without an isolation layer there are no guarantees that an application from one user will not interfere with that of another \cite[p.~233]{xavier2013performance}. Isolation and multi-tenancy are exactly those traits promised by virtualization technologies \cite[p.~21]{da2018containers}. Coupled with a software layer to provision resources on demand, virtualization yields the elastic multi-tenant model embodied in \gls{cloud computing} \cite[p.~203]{kang2016container} \cite[p.~81]{bernstein2014containers} \cite[p.~24]{pahl2015containerization}.
 
-\section{Container}
-\subsection{LXC}
+
+\subsection{Comparison to Hardware Virtualization}
+\label{sec:os-hardware-virtualization-comparison}
+
+In traditional hardware virtualization, a so called hypervisor makes siloed slices of hardware available in the form of \acp{VM} by emulating the underlying physical resources. Each of the \acp{VM} (\textit{guests}) running on the physical hardware (\textit{host}) comes with its own full-fledged \acs{OS}. Two types of hypervisors can be discerned \cite[p.~2]{merkel2014docker} \cite[p.~1]{eder2016hypervisor} \cite[pp.~386--387]{morabito2015hypervisors}:
+
+\begin{description}
+  \item[Type 1 (bare-metal)]
+  \hfill \\
+  Operates directly on top of the host's hardware, not requiring a host \acs{OS}.
+
+%  \textbf{Examples:} Xen, Hyper-V
+
+  \item[Type 2 (hosted)]
+  \hfill \\
+  Operates as a software layer on top of the host's \acs{OS}.
+
+%  \textbf{Examples:} KVM, VMware Workstation, VirtualBox
+\end{description}
+
+Although virtualization through emulation enjoys great popularity~\footnote{Hardware acceleration for hypervisor-based virtualization has even been incorporated into commodity processors \cite[p.~233]{xavier2013performance}.}, it comes at the cost of efficiency. On the other hand, the overhead introduced by OS-level virtualization can be considered almost negligible \cite[pp.~386,~392]{morabito2015hypervisors}.
+
+Whereas hypervisor-based virtualization provides strong isolation guarantees between systems, \acs{OS}-level virtualization only strives to isolate processes. Such an isolated process is known as a container~\footnote{Containers are known as jails or zones in the FreeBSD and Solaris \acsp{OS}, respectively \cite[p.~2]{eder2016hypervisor}.}. Here, the isolation mechanisms are provided as kernel features that establish an abstract and protected view on the \acs{OS}, making two containers unaware of each other or any of the other processes running on the host \cite[p.~2]{merkel2014docker} \cite[pp.~1--2]{eder2016hypervisor}.
+
+Even though both technologies enable a safe multi-tenant model of hardware by confining parts of the application infrastructure, \citeauthor{pahl2015containerization} ascribes them to different use cases, arguing that \acp{VM} are about hardware allocation and management, while containers are tools for delivering software. He further compares them to the concepts of \acs{IaaS} and \acs{PaaS}, respectively \cite[p.~24]{pahl2015containerization}. \citeauthor{eder2016hypervisor} and \citeauthor{merkel2014docker} see the potential for the two technologies to complement each other since the resource footprint of containers is minimal and its security profile is still slightly worse than that of \acsp{VM}~\footnote{Kernels cannot prevent interference in low-level resources such as the \acs{CPU}'s L3 cache or memory bandwidth \cite[p.~52]{burns2016borg}. A good example of combining both virtualization technologies is given by the Google Kubernetes Engine. Here, a cluster of hosts is created on the basis of \acsp{VM} which then exclusively runs software in the form of containers.}\todo{add citation}~\cite[p.~6]{eder2016hypervisor} \cite[p.~2]{merkel2014docker}.
+
+Lastly, it shall be noted that the shared kernel approach of containers means that processes being isolated need to be compatible with the host's kernel and \acs{CPU} architecture \cite[p.~386]{morabito2015hypervisors} \cite[p.~2]{eder2016hypervisor}. In other words, it is not possible to, for example, run Windows containers on Linux hosts or deploy x86 containers on ARM because no emulation is taking place. On the flip side, the shared kernel approach allows kernel security patches to be applied without having to modify a container. This is not the case for a \acs{VM}, where the underlying machine image would have to be rebuild first \cite[p.~3]{eder2016hypervisor}. Moreover, sharing a kernel allows container-based solutions to achieve a higher density of virtualized instances when compared to hypervisor-based solutions \cite[p.~386]{morabito2015hypervisors} \cite[p.~204]{kang2016container}. Containers are also a magnitude faster to start and stop since they are essentially just processes that have to be spawned and terminated, whereas the \acs{OS} of a \acs{VM} needs to be fully booted and shut down \cite[p.~2]{merkel2014docker} \cite[p.~2]{eder2016hypervisor}. Similarly, being a process means that containers do not occupy any resources when they are not executing. \acsp{VM} will idle until they are shut down \cite[p.~2]{merkel2014docker}.
+
+
+\subsection{Linux Kernel Containment Features}
+\label{sec:linux-kernel-containment-features}
+
+As previously hinted at, containers rely on the host's kernel to sandbox processes from each other. In Linux, the set of containment features include but are not limited to:
+
+\begin{description}[format={\storedescriptionlabel}]
+  \item[Chroots\label{itm:chroots}]
+  \hfill \\
+  \texttt{chroot()} (from \textit{ch}ange \textit{root}) changes the root directory of the calling process and all of its children~\footnote{Some people trace the inspiration for containers back to \texttt{chroot()}, which was originally introduced with Unix 7 in 1979 \cite[p.~82]{bernstein2014containers}.}. This is used to restrict a container's view on the filesystem. However, it cannot be considered a security feature because there are multiple intentional escape hatches\todo{update citation} \cite[p.~3]{eder2016hypervisor}.
+
+  \item[Namespaces]
+  \hfill \\
+  Namespaces provide one or more processes with private and restricted views towards certain global system resources \cite[p.~387]{morabito2015hypervisors}. Changes to resources within a namespace are only visible to processes that are members of that namespace. The namespace type (e.g. \texttt{ipc}, \texttt{net}, \texttt{pid} or \texttt{user}) indicates which kinds of resources are being isolated\todo{update citation}. As an example, this feature allows processes within a container to have identifiers that are already in use on the host system or within other containers \cite[p.~3] {eder2016hypervisor}. The network namespace can provide a container with its own network device and virtual \acs{IP} address, whereas the user namespace would be used to ensure that a container's user database is separated from that of the host which means that the container's root user privileges cannot be applied on the host \cite[p.~1]{merkel2014docker}.
+
+  \item[Control groups]
+  \hfill \\
+  Control groups, usually referred to as cgroups, provide resource accounting and limiting for a set of processes  \cite[p.~387]{morabito2015hypervisors} \cite[p.~1]{merkel2014docker}. Even though they are not mandatory for process isolation, cgroups can ensure that one container cannot starve another (e.g. in a \acs{DoS} attack), as well as to help realize cost-accounting multi-tenant environments \cite[p.~4]{eder2016hypervisor}.
+
+  \item[\acl{MAC}]
+  \hfill \\
+  \ac{MAC} describes a concept in which access to or operations on a particular resource is granted based on different authorization rules (\textit{policies}). On Linux, the two prevalent implementations hereof are AppArmor and \acs{SELinux}~\footnote{\ac{SELinux} was originally developed by the \acs{NSA} to address threats of tampering and enable the confinement of damage caused by malicious applications.}\todo{add citation}. In the context of containers, \ac{MAC} is useful as that it can restrict the process to its minimal requirements, thus further reducing the attack surface against the host and other containers \cite[p.~4]{eder2016hypervisor}.
+\end{description}
+
+
 \subsection{Docker}
+\label{sec:docker}
+
+The concept of container-based virtualization has existed long before Docker came into view in 2013~\footnote{In 1998, FreeBSD came up with an extended version of \texttt{chroot()}, called jails. This capability further improved with the release of Solaris' zones in 2004 \cite[p.~82]{bernstein2014containers}. In Linux, kernel namespaces were discussed as early as 2006 \cite[p.~1]{celesti2016exploring}.}\todo{add citation}. Yet, it was Docker, Inc. who made containers popular by creating a toolkit that is greater than the sum of its parts \cite[p.~1]{merkel2014docker}. The following presents three areas of developer concern in which Docker shines and through which it has become a synonym for containers\todo{add citation}~\footnote{\citeauthor{boettiger2015introduction} makes a good case how Docker can also help to make research reproducible and more easily extendable \cite[p.~71]{boettiger2015introduction}.}:
+
+\begin{description}
+  \item[Code packaging]
+  \hfill \\
+  A study found that less than 50\% of software can be successfully built or installed.  This is due to issues such as the \enquote{dependency hell} problem (see~\autoref{sec:monolith-problem}), imprecise documentation or code rot\todo{add to glossary}. Executing code assumes the ability to create a compatible environment \cite[p.~72]{boettiger2015introduction}. Docker addresses this challenge with the concept of container images. Such an image bundles an application with all of its dependencies up to, but excluding, the kernel \cite[p.~1]{merkel2014docker}. It is essentially the filesystem bundle made available to a process that is then isolated as a container (comp.~\ref{itm:chroots} on \autopageref{itm:chroots}). To further simplify things, Docker allows users to imperatively describe how such an image shall be built. This plain text file of steps to be taken is known as a Dockerfile and is ideally suited for use with a \acs{VCS}, i.e. it can be checked in along a repository and evolve with the application \cite[p.~74]{boettiger2015introduction}. As a final innovation in this area, Docker calculates the filesystem differences between each of the steps in a Dockerfile and treats each as a distinct layer of the image. This enables developers to both version and extend images~\footnote{At runtime, all image layers will be merged into a single representation of the filesystem. This is known as a union mount \cite[p.~26]{pahl2015containerization}. } \cite[p.~1]{merkel2014docker}.
+
+  \item[Code portability]
+  \hfill \\
+  By packaging an application along with its dependencies into a single image, Docker paves the way for image-based deployments that offer the freedom of \enquote{develop once, deploy everywhere}~\footnote{While image-based deployments can also be achieved with \acsp{VM}, they are not as portable nor lightweight because they contain the complete toolchain for running an \acs{OS}, including device drivers, the kernel and init system \cite[p.~203]{kang2016container} \cite[p.~2]{eder2016hypervisor}.} \cite[p.~203]{kang2016container}. In this context, a container can be regarded as a running instance of an image. However, it is unlikely that such a container by itself will run in the same way, if at all, across platforms due to differences in, for example, networking or storage \cite[pp.~74--75]{boettiger2015introduction}. This problem is known as runtime consistency \cite[p.~203]{kang2016container}. To enable consistent behavior, Docker ships with a container runtime that abstracts many of the platform peculiarities~\footnote{Of course, target platforms will still have to provide some sort of process isolation features (see~\autoref{sec:linux-kernel-containment-features}). Because this is not the case on macOS and Windows, Docker runs inside a Linux-based \acs{VM} on those platforms \cite[p.~5]{merkel2014docker}.} \cite[p.~75]{boettiger2015introduction}.
+
+  \item[Code reuse]
+  \hfill \\
+  As previously stated, Docker allows one image to extend another. To make this process more straightforward, Docker offers a public registry, the Docker Hub, to and from which users can up- and download versioned, binary copies of images. \citeauthor{eder2016hypervisor} notes that having such a social aspect in the area of virtualization was unheard of before. At the same time, he warns that because images do not get updated automatically, there is a large amount of images containing security vulnerabilities. For instance, over 30\% of official images, i.e. those created by official project developers, contain high priority vulnerabilities \cite[pp.~6--7]{eder2016hypervisor}.
+\end{description}
+
+Driven by the risk of lack of interoperability, Docker and other leaders in the container industry established the \ac{OCI} in 2015 to standardize aforementioned container image formats and runtimes\todo{update citation} \cite[p.~23]{da2018containers}.
+
 
 \section{Container Orchestration}
 
-\section{Kubernetes}
-\subsection{Overview}
-\subsection{Cluster Architecture}
-\subsection{Containers}
-\subsection{Workloads}
-\subsection{Services, Load Balancing and Networking}
-\subsection{Storage}
-\subsection{Configuration}
-\subsection{Security}
-\subsection{Policies}
-\subsection{Scheduling, Preemption and Eviction}
 
 \section{Agile Software Development}
+
 \subsection{CI/CD}
 \subsection{DevOps}
 \subsection{GitOps}
