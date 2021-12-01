@@ -219,11 +219,66 @@ The concept of container-based virtualization has existed long before Docker cam
 Driven by the risk of lack of interoperability, Docker and other leaders in the container industry established the \ac{OCI} in 2015 to standardize aforementioned container image formats and runtimes\todo{update citation} \cite[p.~23]{da2018containers}.
 
 
-\section{Container Orchestration}
+\section{Container Orchestration Platform}
+\label{sec:container-orchestration-platform}
+
+Given the operational benefits of microservice-based applications (see~\autoref{sec:microservice-architecture}), as well containers as a deployment target and medium (see~\autoref{sec:os-level-virtualization}), it is not surprising that the industry is focused on simplifying the management of potentially hundreds of instances of containerized services across a cluster of hosts (\textit{nodes}) \cite[p.~44]{khan2017key} \cite[p.~1]{pahl2017cloud}. This section presents the immediate benefits to dealing with container workloads, lists the requirements to any such container orchestration platform and tries to convey its way of working by laying out a reference architecture.
+
+
+\subsection{The Shift to Container Workloads}
+\label{sec:shift-to-container-workloads}
+
+In an article about the lessons Google has learned from creating and operating three container-management systems over more than a decade~\footnote{Google has contributed much of the Linux kernel's process isolation code \cite[p.~50]{burns2016borg}.}, \citeauthor{burns2016borg} make a strong case how containerization transforms data centers from being machine oriented to being application oriented \cite[pp.~52--53]{burns2016borg}. Since a container is essentially just an isolated process, the identity of an instance being managed in a cluster now exactly lines up with the identity expected by developers, namely the main process (and its children) of their applications. This shift of primary key has ripple effects throughout the cluster's infrastructure. For instance, load balancers no longer balance traffic across machines but across instances of an application. Logs are automatically keyed by the application, whereas on machines logs are likely to be polluted by other applications or system operations. On the other hand, containers relieve developers and operations teams from worrying about machine-specific details. Together, this makes building, deploying, monitoring and debugging applications dramatically easier.
+
+
+\subsection{Basic Capabilities}
+\label{sec:container-orchestration-platform-capabilities}
+
+A container orchestration platform can be broadly defined as a system that provides an enterprise-level framework for integrating and managing containers at scale \cite[p.~44]{khan2017key}. It is not only concerned with the runtime but also aids in the deploy and maintain phases of an application's lifecycle \cite[p.~225]{casalicchio2019container}. For the purposes of automation, all cluster operations should be exposed and accessible via an \acs{API} \cite[p.~224]{casalicchio2019container} \cite[p.~29]{pahl2015containerization}. Throughout literature, the following set of capabilities is generally expected from a container orchestration platform:
+
+\begin{description}
+  \item[Scheduling]
+  \hfill \\
+  Operators need to be able to deploy, i.e. schedule, containers onto hosts based on a variety of parameters. Typically, this encompasses a replication degree and placement constraints like \gls{node affinity} or resource requests \cite[p.~225]{casalicchio2019container}. Deployments should also be able to take advantage of local inter-process communication by allowing containers to be co-located on the same node. Once scheduled, the platform should perform a readiness check to decide whether the container is capable to answer requests. Similarly, periodic health checks should be used to determine whether a container needs to be restarted or rescheduled onto a different host \cite[p.~2]{al2019container}.
+
+  \item[Scaling \& Availability]
+  \hfill \\
+  To cope with increases in traffic, horizontal scaling of applications is critical \cite[p.~1]{al2019container}. In this context, an application refers to one or multiple containers that are managed as a single entity \cite[p.~44]{khan2017key} \cite[p.~2]{pahl2017cloud}. Scaling may happen based on a static replication factor or through threshold-based autoscaling policies (e.g. \acs{CPU} or memory utilization). Platforms should also allow operators to define more sophisticated policies via external plug-ins. Naturally, the load then needs to be distributed amongst container instances by means of a load balancer that utilizes the health check mentioned above to decide whether to include a container instance in its target set or not \cite[pp.~225--226]{casalicchio2019container} \cite[p.~2]{al2019container}. However, scaling by itself does not guarantee high availability or fault tolerance. This is especially true when dealing with a single node cluster. Instead, operators should follow the three principles of reliability engineering in which failures need to be detected, single points of failure eliminated and reliable crossovers established \cite[p.~45]{khan2017key}. Of this, redundancy, i.e. replication across physically separated hosts, remains the most important feature, though self-healing by detecting failures is just as key. A container platform must support and implement both techniques \cite[p.~176]{vayghan2019microservice} \cite[p.~53]{burns2016borg}.
+
+  \item[Monitoring]
+  \hfill \\
+  Platforms should facilitate monitoring across two contexts. First, the cluster infrastructure needs to be observed for resource utilization and draining. Secondly, container activity must be made visible by aggregating logs and performance metrics, as well as allowing \gls{white-box tracing} of requests \cite[p.~47]{khan2017key}.
+\end{description}
+
+Next to these basic capabilities, platforms may further implement a slew of features across domains such as security, networking or maintenance. As an example, platforms could provide role-based access control for containers, allow configuring \acl{MAC} (see~\autoref{sec:linux-kernel-containment-features}) on a per container basis, scan container images for vulnerabilities (see~\autoref{sec:docker}), add support for the service registry pattern (see~\autoref{sec:service-registry-pattern}) or enable cluster-wide backups.
+
+
+\subsection{Reference Architecture}
+\label{sec:orchestration-reference-architecture}
+
+In a survey on the state of the art in container orchestration technologies, \citeauthor{casalicchio2019container} describes how a container orchestrator may be implemented as an autonomic computing system based on the \acs{MAPE-K} control loop \cite[pp.~226-228]{casalicchio2019container}. Such systems manage themselves by dynamically adapting to changes in accordance to business policies and objectives\todo{add citation}. For compute clusters, this typically involves goals such as maximizing resource usage, reducing energy consumption or satisfying \acsp{SLA}.
+
+\begin{description}
+  \item[Monitor]
+  \hfill \\
+  Collects details (e.g. node health or application load) from managed resources (e.g. \acsp{VM} or containers) and performs preliminary aggregation, correlation and filtering to determine whether a symptom needs to be further analyzed.
+
+  \item[Analyzer]
+  \hfill \\
+  Performs more complex data analysis and reasoning on reported symptoms, this time considering the shared knowledge base on the system's topology, policies, historical logs and metrics.
+
+  \item[Planner]
+  \hfill \\
+  Devises series of actions to be run against set of managed resources (e.g. spawn new container instances) in response to detected symptoms (e.g. high memory utilization).
+
+  \item[Executor]
+  \hfill \\
+  Realizes adaptation plan using container and infrastructure management \acsp{API}.
+\end{description}
 
 
 \section{Agile Software Development}
 
-\subsection{CI/CD}
+\subsection{The Race to Market}
+\subsection{\acl{CICD}}
 \subsection{DevOps}
-\subsection{GitOps}
