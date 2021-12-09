@@ -277,8 +277,42 @@ In a survey on the state of the art in container orchestration technologies, \ci
 \end{description}
 
 
-\section{Agile Software Development}
+\section{Continuous Integration and Deployment}
+\label{sec:continuous-integration-deployment}
 
-\subsection{The Race to Market}
-\subsection{\acl{CICD}}
-\subsection{DevOps}
+Agile software development welcomes changing requirements, even late in the development. This, combined with the proclaimed goal of wanting to satisfy customers through early and continuous delivery of software has lead organizations to adopt practices known as \ac{CI/CD} \cite{beck2001manifesto} \cite[p.~22]{savor2016continuous} \cite[p.~78]{virmani2015understanding}. This section explains each practice, as well as the value it adds to the software development lifecycle.
+
+\subsection{\acl{CI}}
+\label{sec:continuous-integration}
+
+\citeauthor{fowler2006continuous}, a well known software developer, public speaker and co-author of the \citetitle{beck2001manifesto}, defines \ac{CI} as a software development practice where members of a team integrate their work frequently, and at least daily. Each such integration (\textit{build}) should be verified by an automated compile and test suite. Only if all of these steps (\textit{pipeline}) succeed, can the overall build considered to be good. The goal being that integration errors are detected as quickly as possible \cite[pp.~1,~3]{fowler2006continuous}. Early detection allows developers to \cite[pp.~7,~11--12]{fowler2006continuous}:
+
+\begin{itemize}
+  \item build off a shared stable base~\footnote{\citeauthor{meyer2014continuous} draws a comparison to Toyota's factory floor. Here, every worker can halt the production line if something breaks or holds them up. Failed integrations should echo a similar behavior and encourage developers to resolve issues promptly as a favor to others \cite[p.~15]{meyer2014continuous}.}
+  \item predict how long the integration will take
+  \item resolve issues more easily since the changes are recent and few
+  \item prevent cumulative failures (where one bug shows as the result of another)
+\end{itemize}
+
+However, the degree of these benefits is directly tied to the depth of the test suite and similarity between the environment in which the results were generated and that where the software will ultimately be deployed to. Every difference introduces a chance that what happens under a test will not happen in production \cite[pp.~9,~12]{fowler2006continuous}.
+
+Although \ac{CI} requires no particular tooling, many organizations leverage a so-called \ac{CI} server to monitor code repositories for changes. With each commit, the server will checkout the source code, initiate a build and publicly display the integration status. It is exactly this automatism that differentiates \ac{CI} from traditional builds which are performed on a timed schedule. The latter will, by definition, always delay detection of errors \cite[pp.~7,~10]{fowler2006continuous}.
+
+Lastly, \citeauthor{fowler2006continuous} emphasizes that build pipelines must balance the breadth of bug finding techniques (e.g. static code analysis) with the need for speed, i.e. how long it will take to run a build~\footnote{\ac{CI} originated as one of the twelve original practices of \ac{XP}. Another practice of \ac{XP} advocates for keeping build times under ten minutes \cite[pp.~2,~8]{fowler2006continuous}.}\todo{add citation}. More in-depth tests may, for example, be moved to a secondary test suite that is not run on every commit. Builds could also be configured to only run against modified components \cite[pp.~5,~8]{fowler2006continuous}.
+
+
+\subsection{\acl{CD}}
+\label{sec:continuous-deployment}
+
+Whereas \ac{CI} purely focuses on the integration of changes, \ac{CD} extends the practice by automatically deploying newly integrated changes to production \cite[p.~64]{leppanen2015highways} \cite[p.~21]{savor2016continuous}. Consequently, deployment processes are no longer manual, nor involve human approval, but instead happen through repeatedly tested automation. This removes a major source of error, giving developers one less reason to stress on release day~\footnote{Ironically, developers prefer more frequent releases when given the choice \cite[p.~21]{savor2016continuous}.} \cite[pp.~79--80]{virmani2015understanding} \cite[p.~53]{chen2015continuous}. With regard to other perceived benefits, \citeauthor{leppanen2015highways} have surveyed 15 companies across various domains and sizes and found that \ac{CD} \cite[pp.~66--67]{leppanen2015highways}:
+
+\begin{itemize}
+  \item improves productivity and customer satisfaction
+  \item reinforces developers' sense of accomplishment
+  \item enables stakeholders to stay informed
+  \item prevents a disconnect between the development and operations teams
+\end{itemize}
+
+Admittedly, most organizations will, however, settle on a less continuous process for reasons such as industry regulations (e.g. automotive software), distribution channels (e.g. review process of application store) or pure customer preference \cite[pp.~68--69]{leppanen2015highways}. As an example, web-based applications will be more suitable for \ac{CD} than off-the-shelve software because updates can happen largely transparent to the user~\footnote{Hewlett-Packard (HP) even practices \ac{CD} with its printer firmware. The author of this thesis was formerly employed at HP and remembers this fact being shared as if it were a secret family recipe.} \cite[p.~22]{savor2016continuous}. In such situations where immediate deployments not are exercised but a company is still ready to reliably release its software on demand, literature refers to the same acronym as Continuous Delivery \cite[p.~50]{chen2015continuous}.
+
+Irrespective of the level practiced, the pipelines used for these purposes (comp.~\autoref{sec:continuous-integration}) will likely be extended with more tests (e.g. system and performance), as well as methods to roll back releases on failures \cite[pp.~52--53]{chen2015continuous}. \ac{CD} can of course also be combined with advanced deployment strategies such as using a secondary environment for beta testing (\textit{staging}), switching traffic between two identical environments as testing completes (\textit{blue / green}) or releasing changes off peak or out of user reach to test scalability and performance (\textit{dark launch}) \cite[p.~23]{savor2016continuous}.
