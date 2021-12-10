@@ -81,9 +81,28 @@ A service registry acts as a database of services, storing the various instances
   \hfill \\
   To contact a service, clients obtain the locations of all service instances by querying the registry. The client then needs to perform a load balancing algorithm to decide which instance will be contacted.
 
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.8\textwidth]{resources/02_theoretical_framework/microservice_architecture/discovery-client-side}
+  \caption[Client-side service discovery]{Client-side service discovery \cite[p.~37]{messina2016simplified}}
+  \label{fig:client-side-discovery}
+\end{figure}
+
+\FloatBarrier
+
   \item[Server-side]
   \hfill \\
   To contact a service, clients make a request to the service's load balancer which runs at a well known location. This load balancer queries the registry and forwards the request to an available instance.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.8\textwidth]{resources/02_theoretical_framework/microservice_architecture/discovery-server-side}
+  \caption[Server-side service discovery]{Server-side service discovery \cite[p.~37]{messina2016simplified}}
+  \label{fig:server-side-discovery}
+\end{figure}
+
+\FloatBarrier
+
 \end{description}
 
 In any case, the service registry is a critical component and thus, must be highly available.
@@ -96,7 +115,19 @@ Depending on the decomposition technique chosen (see~\autoref{sec:microservice-d
 
 An \acs{API} gateway represents the single entrypoint for all clients in which some requests are simply proxied while others fan out to and consume multiple services. In the latter case, gateways can be viewed as orchestrators and as such, typically do not have persistence layers \cite[p.~585]{villamizar2015evaluating}. They may, however, cache responses\todo{add citation}. Another important task in orchestrating multiple microservices is managing distributed transactions~\footnote{Distributed transactions are commonly implemented using the two-phase commit protocol. The no-\acs{ACID} transaction type has also been proposed for this context, which is known as a compensation transaction \cite[p.~32]{cerny2018contextual}.}, i.e. ensuring atomicity guarantees for a set of distributed resources \cite[p.~32]{cerny2018contextual}. Finally, gateways may also deal with generic features such as authentication and authorization or implement the circuit breaker pattern to prevent a service failure from cascading to other services \cite[p.~41]{kalske2017challenges} \cite[p.~37]{messina2016simplified}.
 
-It shall be noted that gateways incur a performance penalty because they introduce an additional network hop \cite[p.~37]{messina2016simplified}. This is generally true for proxying gateways. Orchestrating gateways, on the other hand, have the potential to decrease latency since the various requests being collapsed now already originate from the target network\todo{add citation}. In both cases, the performance degradation will heavily depend on the system's interconnectedness \cite[p.~9]{dragoni2017microservices}.
+\begin{figure}[htp]
+    \centering
+    \subfloat[]{{\includegraphics[width=\textwidth]{resources/02_theoretical_framework/microservice_architecture/api-gateway-pattern} }}%
+    \qquad
+    \subfloat[]{{\includegraphics[width=\textwidth]{resources/02_theoretical_framework/microservice_architecture/api-proxy-pattern} }}%
+
+    \caption[Service consumption model with and without \acs{API} gateway]{Service consumption model with (a) and without (b) \acs{API} gateway \cite{netflix2013api}}
+    \label{fig:api-gateway-pattern}
+\end{figure}
+
+\FloatBarrier
+
+It shall be noted that gateways incur a performance penalty because they introduce an additional network hop \cite[p.~37]{messina2016simplified}. This is generally true for proxying gateways. Orchestrating gateways, on the other hand, have the potential to decrease latency since the various requests being collapsed now already originate from the target network (comp.~\autoref{fig:api-gateway-pattern}) \cite{netflix2013api}. In both cases, the performance degradation will heavily depend on the system's interconnectedness \cite[p.~9]{dragoni2017microservices}.
 
 
 \subsection{Database-per-Service Pattern}
@@ -126,7 +157,19 @@ While this pattern contributes to service intimacy, it comes at the cost of havi
 
 Historically, the complexity of monolithic applications (see~\autoref{sec:monolith-problem}) has already been addressed using different \acf{SOA} approaches that also decompose a large system into many smaller services. Academia, however, is undecided whether microservices should be considered as a subset or superset of \acp{SOA} or whether it constitutes a new, distinct idea \cite[pp.~584--585]{villamizar2015evaluating} \cite[p.~30]{cerny2018contextual}. The systematic mapping study conducted by \citeauthor{cerny2018contextual} in \cite{cerny2018contextual} spends a great deal on contrasting the two architectures. A short summary is given in the following.
 
-In both approaches, services cooperate to provide functionality for the overall system. However, the path to achieving this goal is different. This is most obvious when looking at the interaction patterns between the services involved. \acp{SOA} rely on orchestration, whereas microservice-based applications prefer choreography. The former expects a centralized business process to coordinate activities across services and combine the outcomes, whereas the latter expects individual services to collaborate based on their interface contracts. Orchestration differs from choreography with respect to where the logic that controls the interactions should reside. The two terms describe a centralized and decentralized approach hereof, respectively.
+In both approaches, services cooperate to provide functionality for the overall system. However, the path to achieving this goal is different. This is most obvious when looking at the interaction patterns between the services involved. \acp{SOA} rely on orchestration, whereas microservice-based applications prefer choreography. The former expects a centralized business process to coordinate activities across services and combine the outcomes, whereas the latter expects individual services to collaborate based on their interface contracts. Orchestration differs from choreography with respect to where the logic that controls the interactions should reside. The two terms describe a centralized and decentralized approach hereof, respectively (comp.~\autoref{fig:service-orchestration-choreography}).
+
+\begin{figure}[htp]
+    \centering
+    \subfloat[]{{\includegraphics[width=0.42\textwidth]{resources/02_theoretical_framework/microservice_architecture/service-orchestration} }}%
+    \qquad
+    \subfloat[]{{\includegraphics[width=0.42\textwidth]{resources/02_theoretical_framework/microservice_architecture/service-choreography} }}%
+
+    \caption[Service orchestration and choreography]{Service orchestration (a) and choreography (b) \cite[p.~30]{cerny2018contextual}}
+    \label{fig:service-orchestration-choreography}
+\end{figure}
+
+\FloatBarrier
 
 An important remark that \citeauthor{cerny2018contextual} make, is that orchestration through an integration layer, such as a messaging bus, oftentimes leads to a situation in which the system parties, i.e. the services, agree on a standardized representation of the business objects they exchange. The system ends up with one kind of business object each. This is known as a canonical data modal. The danger being that a change in one of the business objects necessitates changes in all of the services that deal with this object. As a result, deployments in a \ac{SOA} again happen in a monolithic fashion. In the microservice architecture, such a change can at most propagate to the \acs{API} gateways (comp.~\autoref{sec:api-gateway-pattern}), though this is less likely because gateways integrate services based on their interfaces, not on their models.
 
@@ -167,6 +210,18 @@ In traditional hardware virtualization, a so called hypervisor makes siloed slic
 Although virtualization through emulation enjoys great popularity~\footnote{Hardware acceleration for hypervisor-based virtualization has even been incorporated into commodity processors \cite[p.~233]{xavier2013performance}.}, it comes at the cost of efficiency. On the other hand, the overhead introduced by OS-level virtualization can be considered almost negligible \cite[pp.~386,~392]{morabito2015hypervisors}.
 
 Whereas hypervisor-based virtualization provides strong isolation guarantees between systems, \acs{OS}-level virtualization only strives to isolate processes. Such an isolated process is known as a container~\footnote{Containers are known as jails or zones in the FreeBSD and Solaris \acsp{OS}, respectively \cite[p.~2]{eder2016hypervisor}.}. Here, the isolation mechanisms are provided as kernel features that establish an abstract and protected view on the \acs{OS}, making two containers unaware of each other or any of the other processes running on the host \cite[p.~2]{merkel2014docker} \cite[pp.~1--2]{eder2016hypervisor}.
+
+\begin{figure}[htp]
+    \centering
+    \subfloat[]{{\includegraphics[width=0.38\textwidth]{resources/02_theoretical_framework/os_level_virtualization/virtualization-hypervisor} }}%
+    \qquad
+    \subfloat[]{{\includegraphics[width=0.38\textwidth]{resources/02_theoretical_framework/os_level_virtualization/virtualization-container} }}%
+
+    \caption[Hardware and OS-level virtualization]{Hardware (a) and OS-level (b) virtualization \cite[p.~387]{morabito2015hypervisors}}
+    \label{fig:hypervisor-container-virtualization}
+\end{figure}
+
+\FloatBarrier
 
 Even though both technologies enable a safe multi-tenant model of hardware by confining parts of the application infrastructure, \citeauthor{pahl2015containerization} ascribes them to different use cases, arguing that \acp{VM} are about hardware allocation and management, while containers are tools for delivering software. He further compares them to the concepts of \acs{IaaS} and \acs{PaaS}, respectively \cite[p.~24]{pahl2015containerization}. \citeauthor{eder2016hypervisor} and \citeauthor{merkel2014docker} see the potential for the two technologies to complement each other since the resource footprint of containers is minimal and its security profile is still slightly worse than that of \acsp{VM}~\footnote{Kernels cannot prevent interference in low-level resources such as the \acs{CPU}'s L3 cache or memory bandwidth \cite[p.~52]{burns2016borg}. A good example of combining both virtualization technologies is given by the Google Kubernetes Engine. Here, a cluster of hosts is created on the basis of \acsp{VM} which then exclusively runs software in the form of containers.}\todo{add citation}~\cite[p.~6]{eder2016hypervisor} \cite[p.~2]{merkel2014docker}.
 
@@ -257,6 +312,17 @@ Next to these basic capabilities, platforms may further implement a slew of feat
 \label{sec:orchestration-reference-architecture}
 
 In a survey on the state of the art in container orchestration technologies, \citeauthor{casalicchio2019container} describes how a container orchestrator may be implemented as an autonomic computing system based on the \acs{MAPE-K} control loop \cite[pp.~226-228]{casalicchio2019container}. Such systems manage themselves by dynamically adapting to changes in accordance to business policies and objectives\todo{add citation}. For compute clusters, this typically involves goals such as maximizing resource usage, reducing energy consumption or satisfying \acsp{SLA}.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=\textwidth]{resources/02_theoretical_framework/container_orchestration_platform/reference_architecture}
+  \caption[Reference architecture for container orchestration platforms]{Reference architecture for container orchestration platforms \cite[p.~226]{casalicchio2019container}}
+  \label{fig:container-orchestrator-reference-architecture}
+\end{figure}
+
+\FloatBarrier
+
+\autoref{fig:container-orchestrator-reference-architecture} illustrates the high-level architecture of container orchestration platforms that follow these self-adapting principles. The components in the \acs{MAPE-K} cycle would collaborate as following:
 
 \begin{description}
   \item[Monitor]
