@@ -131,5 +131,32 @@ Obviously, \ref{itm:anonymization-step-remove-contact} is the most straightforwa
 
 
 \section{Functional Requirements}
+\label{sec:functional-requirements}
+
+In accordance to \autoref{sec:data-collection-survey}, the following functional requirements are defined as the bare minimum of features any implementation must provide in order to be used as the backbone of the data collection survey. These requirements are expressed from the perspective of an end-user who hopes to achieve different goals by using the system and are grouped by the various roles encountered. A visual representation in the form of a use case diagram is given in \autoref{fig:system-use-cases}, located in the \autoref{app:concept} on \autopageref{fig:system-use-cases}.
+
+\paragraph{Participant}
+\begin{enumerate}[font=\sffamily,label={\textbf{FR-\protect\twodigits{\theenumi}}},leftmargin=1.4cm, ref=FR-\protect\twodigits{\theenumi}]
+	\item As a participant, I can grant my consent, so that the measurement devices installed in my household start to collect measurements.\label{itm:fr-grant-consent}
+	\item As a participant, I can revoke my consent, so that the measurement devices installed in my household stop to collect measurements.\label{itm:fr-revoke-consent}
+	\item As a participant, I can revoke my consent, so that my registration details are anonymized.\label{itm:fr-revoke-consent-anonymize}
+	\item As a participant, I can view my registration details, so that I am able to notify the researchers of mistakes.\label{itm:fr-view-registration-details}
+	\item As a participant, I can view my measurements, so that I am able to understand what kind of data is being captured, stored and processed.\label{itm:fr-view-measurements}
+\end{enumerate}
+
+\paragraph{Researcher}
+\begin{enumerate}[resume, font=\sffamily,label={\textbf{FR-\protect\twodigits{\theenumi}}},leftmargin=1.4cm, ref=FR-\protect\twodigits{\theenumi}]
+	\item As a researcher, I can add a new participant based on his registration details, so that measurements may be collected from a new household.\label{itm:fr-add-participant}
+	\item As a researcher, I can modify the registration details of a participant, so that I am able to correct reported mistakes.\label{itm:fr-modify-registration-details}
+	\item As a researcher, I can view the consent of each participant, so that I know how many households are actively participating in the survey.\label{itm:fr-view-consent}
+\end{enumerate}
+
+\paragraph{Administrator}
+\begin{enumerate}[resume, font=\sffamily,label={\textbf{FR-\protect\twodigits{\theenumi}}},leftmargin=1.4cm, ref=FR-\protect\twodigits{\theenumi}]
+	\item As an administrator, I can view the health status of each measurement device, so that I know when to investigate potential errors.\label{itm:fr-view-health-status}
+	\item As an administrator, I can remotely update measurement devices, so that new features may be added and bugs resolved without requiring user intervention.\label{itm:fr-update-device}
+	\item As an administrator, I can connect to individual measurement devices, so that I am able to service them beyond updates and debug errors at source.\label{itm:fr-connect-to-device}
+\end{enumerate}
+
 
 \section{Non-Functional Requirements}
