@@ -3,7 +3,132 @@
 \chapter{Concept}
 \label{chp:concept}
 
-\section{Overview}
+\section{Data Collection Survey}
+\label{sec:data-collection-survey}
+
+\subsection{Overview}
+\label{sec:survey-overview}
+
+The research group around the \ac{EBP} has called upon households to participate in an automated data collection survey that aims to establish a data set which details to what extent private households equipped with \acsp{PVS}:
+
+\begin{itemize}
+  \item feed energy into the grid
+  \item obtain energy from the grid
+  \item store energy in a home battery (if present)
+\end{itemize}
+
+Fundamentally, the task of creating such a data set boils down to:
+
+%\label{itm:survey-task-read-meters}
+
+\begin{enumerate}[label=(\Alph*)]
+  \item \labeltext[Subtask~(A)]{reading multiple electricity and generation meters~\footnote{This survey is particularly interested in meters which utilize the \acf{SML} communication protocol to expose their internal measurement data.}}{itm:survey-task-read-meters}
+  \item \labeltext[Subtask~(B)]{transmitting the observed data to a centralized data store}{itm:survey-task-transmit-measurements}
+\end{enumerate}
+
+In order to do this in a fully automated manner, the survey will require an end-to-end software based solution. Having said that, such a solution will, however, still need to bridge between the physical world with its meters and the digital world where the observed data (\textit{measurements}) shall be stored and processed. For this purpose, the solution may rely on a phototransistor optocoupler (\textit{measurement probe}) that is capable of converting the light signal (\textit{meter interface}) of an electricity or generation meter into a serial bitstream~\footnote{Such a measurement probe is currently being developed and soldered by the supervisor of this thesis, Johannes Kaeppel.}. Reversely, the measurement probe may also be used to send light impulses to the meter interface, allowing programmatic control of its menu.
+
+With respect to \ref{itm:survey-task-read-meters}, the survey intends to install one or multiple headless compute devices (\textit{measurement devices}) in each participating household. These devices will be equipped with one or multiple measurement probes. The number of measurement devices and probes will vary depending on the number of meters to be read out and whether they are physically separated from each other, i.e. whether one measurement device can be practically connected to multiple meters. Further, the survey is targeting a 15 minute interval in which measurements shall be made (\textit{measurement cycle}).
+
+\ref{itm:survey-task-transmit-measurements} can be explained by the fact that the research group would like to analyze measurements as early as possible. More so, they see the potential to expand this survey with the ability to give households a preview of the transactions and revenue or savings that could be achieved if the household were to be actively participating in the \ac{EBP} (comp.~\cite{stoy2019broker}\todo{add page number}). This rules out any solutions in which the measurements are stored on device and only processed when the survey ends and thus, devices have been returned. Instead, measurements shall be transferred to a centralized data store on an hourly schedule, at minimum (\textit{report cycle}).
+
+
+\subsection{Registration}
+\label{sec:survey-registration}
+
+Even though the survey hopes to cover a diverse set of households, it currently does not intend for the public to sign up for participation at free will. Instead, the survey will follow an invite-only model. Regardless of the criteria based on which households are selected (comp.~\autoref{sec:goals-and-scope}), participants will have to fill out a registration form that covers the following subjects:
+
+\paragraph{Contact details}
+\begin{itemize}
+  \item What is your name?
+  \item What is your email address?
+\end{itemize}
+
+\paragraph{Location}
+\begin{itemize}
+  \item What is your address?
+\end{itemize}
+
+\paragraph{Metadata}
+\begin{itemize}
+  \item How many children live in your household?
+  \item How many adults live in your household?
+  \item How many adults work in your household?
+  \item Does your household have an \acs{EV} charger?
+  \item Does your household have a heat pump?
+  \item Does your household have a home battery?
+\end{itemize}
+
+\paragraph{\aclp{PVS}}
+\begin{itemize}
+  \item What is the nominal power for each of your \acp{PVS}?
+  \item What is the azimuth and tilt angle for each of your \acp{PVS}?
+  \item What is the installation date for each of your \acp{PVS}?
+\end{itemize}
+
+\paragraph{Meters}
+\begin{itemize}
+  \item What is the model number of each of your electricity meters?
+  \item What is the model number of each of your generation meters?
+  \item Which of your \acsp{PVS} is connected to which of your generation meters?
+\end{itemize}
+
+The answers to this questionnaire (\textit{registration details}) shall be stored alongside the measurements  collected for that particular household. This allows the research group to, for example, correlate measurements with the geographic location of that household and thus, the weather conditions at the time of measurement.
+
+
+\subsection{Consent}
+\label{sec:survey-consent}
+
+Given the involvement of third parties, data capture, transmission and storage must be in compliance with local data protection laws (e.g. \acs{GDPR} in Europe). Through consultation with a legal professional, the research group has determined that the solution shall track the participation status (\textit{consent}) for each of the survey's subjects and couple that to the lifecycle of each measurement device, as well as the data processing capabilities of the research group itself. Three states of participation shall be distinguished for any given household:
+
+\begin{description}
+  \item[Consent not granted]
+  \hfill \\
+  The household has been signed up for participation in the data collection survey. It may have already received and connected one or multiple measurement devices. None of these devices shall make any measurements.
+
+  \item[Consent granted]
+  \hfill \\
+  The household is actively participating in the data collection survey. During this period, the measurement devices shall make and transmit measurements. Collected measurements may be processed in a fully personalized manner, i.e. the research group may correlate measurements with the registration details.
+
+  \item[Consent revoked]
+  \hfill \\
+  The household is no longer participating in the data collection survey. Measurement devices shall not make any further measurements and instead must be returned to the research group. Collected measurements may now only be processed in an anonymized manner (see~\autoref{sec:survey-anonymization}).
+\end{description}
+
+From these descriptions it is clear that the acts of granting and revoking a consent shall be considered one-time operations, i.e. participants shall not be able to reverse their decisions.
+
+
+\subsection{Anonymization}
+\label{sec:survey-anonymization}
+
+The \acs{GDPR} stipulates that personally identifiable data must be removed on user request\todo{add citation}. Yet, to ensure that the collected measurements remain of value even after a participant has revoked his consent, the research group has come up with a concept to anonymize the registration details (comp.~\autoref{sec:survey-registration}), allowing continued processing and limited geographic correlation. This concept, again, has been established on the basis of legal advice sought after. It plans to:
+
+\begin{enumerate}[label=(\Alph*)]
+  \item \labeltext[Measure~(A)]{remove the contact details}{itm:anonymization-step-remove-contact}
+  \item \labeltext[Measure~(B)]{anonymize the location}{itm:anonymization-step-anonymize-location}
+  \item \labeltext[Measure~(C)]{anonymize the \aclp{PVS}}{itm:anonymization-step-anonymize-pvs}
+\end{enumerate}
+
+Obviously, \ref{itm:anonymization-step-remove-contact} is the most straightforward to obscuring a participant's identity. Unfortunately, the same technique cannot be applied to the location because measurements will almost, in all cases, have to be evaluated in the context of their geographic location (\textit{geospatial analysis}). Therefore, \ref{itm:anonymization-step-anonymize-location} is required. Similarly, \ref{itm:anonymization-step-anonymize-pvs} is necessary because the specifications of a \acs{PVS} could be matched against a public registry (e.g.~\acs{MaStR} in Germany~\footnote{The \ac{MaStR} contains the master data of all electricity and gas generating plants in Germany. It also tracks actors such as the plant operators or energy suppliers. Many of its contents are publicly viewable at \url{https://www.marktstammdatenregister.de}}). The following descriptions shall further explain \ref{itm:anonymization-step-anonymize-location} and \ref{itm:anonymization-step-anonymize-pvs}, respectively:
+
+\begin{description}
+  \item[Anonymization of location]
+  \hfill \\
+  To protect a participant's identity but preserve some degree of locality among measurements, a household's location shall be anonymized by diluting it to a broader geographic region. This dilution shall happen in proportion to the population density per square  kilometer ($\rho_N$) encountered for that particular household. To be specific, the household's location shall be replaced with a randomly generated location that has a distance ($d$) of at least \SI{0.3}{\kilo\meter}, and at most \SI{20}{\kilo\meter}, from the original one. Given $\rho_N$, the exact bounds are defined as:
+
+\begin{equation}
+  \begin{aligned}
+  d_{\text{min}} &= \max{(\min(-1.321 \times \rho_N + \SI{4264}{\meter}, \SI{8000}{\meter}), \SI{300}{\meter})}\\
+  d_{\text{max}} &= \max{(\min(-3.107 \times \rho_N + \SI{10621}{\meter}, \SI{20000}{\meter}), \SI{1300}{\meter})}
+  \end{aligned}
+\label{eq:anonymize-location-min-max-distance}
+\end{equation}
+
+  \item[Anonymization of \aclp{PVS}]
+  \hfill \\
+  To protect a participant's identity but preserve some context among measurements, each of a household's \acsp{PVS} shall be anonymized by normalizing its specifications. To be specific, the nominal power of a \ac{PVS} shall be rounded to the nearest integer and the installation date shall now only track the year. As for the azimuth and tilt angles, the research group has found that the German public registry only tracks these values vaguely, meaning that, in the context of this survey, no normalization is required thereof.
+\end{description}
+
 
 \section{Functional Requirements}
 
