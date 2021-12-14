@@ -160,3 +160,37 @@ In accordance to \autoref{sec:data-collection-survey}, the following functional 
 
 
 \section{Non-Functional Requirements}
+\label{sec:non-functional-requirements}
+
+Whereas functional quality stresses conformance with the design specifications, structural quality addresses non-functional requirements such as security and maintainability \cite[p.~2]{Martinez-Ortiz:2016:QMW:3011141.3011203}. Together, both can be used to constitute the evaluation framework for measuring a system's quality, better known as \ac{QoS}. \citeauthor{Liu:2004:QCP:1013367.1013379} argue that it is not practical to come up with a standard model of attributes because \ac{QoS} is a broad, context-dependent concept \cite[p.~67]{Liu:2004:QCP:1013367.1013379}. Therefore, the following list of desired structural properties is, for the most part, based on the goal of supporting the long-term development and operation of this system.
+
+\paragraph{Security}
+\begin{enumerate}[font=\sffamily, label={\textbf{NFR-\protect\twodigits{\theenumi}}},leftmargin=1.7cm, ref=NFR-\protect\twodigits{\theenumi}]
+	\item The system shall be protected from unauthorized access. Systems not affiliated with this project shall not be allowed to retrieve or modify any information. More specifically, the individual features outlined above shall only be accessible to their designated user.\label{itm:nfr-security}
+\end{enumerate}
+
+\paragraph{Scalability}
+\begin{enumerate}[resume, font=\sffamily, label={\textbf{NFR-\protect\twodigits{\theenumi}}},leftmargin=1.7cm, ref=NFR-\protect\twodigits{\theenumi}]
+	\item The system shall be able to handle varying levels of load without notable performance degradation. It shall be designed to scale both vertically and horizontally without having to exchange major components beforehand.\label{itm:nfr-scalability}
+\end{enumerate}
+
+\paragraph{Availability}
+\begin{enumerate}[resume, font=\sffamily, label={\textbf{NFR-\protect\twodigits{\theenumi}}},leftmargin=1.7cm, ref=NFR-\protect\twodigits{\theenumi}]
+	\item The system shall be highly available so that measurements can be made, transmitted and stored around the clock.\label{itm:nfr-availability}
+\end{enumerate}
+
+\paragraph{Maintainability}
+\begin{enumerate}[resume, font=\sffamily, label={\textbf{NFR-\protect\twodigits{\theenumi}}},leftmargin=1.7cm, ref=NFR-\protect\twodigits{\theenumi}]
+	\item The system shall be well-documented, include usage examples and other explanatory materials that help researchers, administrators and developers get onboarded quickly.\label{itm:nfr-maintainability-documentation}
+	\item The system shall use tools such as a static type checker, linter and formatter to induce best practices, encourage self-descriptiveness and enforce a common legible style across all code contributed.\label{itm:nfr-maintainability-tools}
+\end{enumerate}
+
+\paragraph{Testability}
+\begin{enumerate}[resume, font=\sffamily, label={\textbf{NFR-\protect\twodigits{\theenumi}}},leftmargin=1.7cm, ref=NFR-\protect\twodigits{\theenumi}]
+	\item The system shall employ a rigid test suite to ensure that as few regressions as possible are introduced accidentally. Coverage reports shall highlight the places lacking in tests so that these can be addressed in the future.\label{itm:nfr-testability}
+\end{enumerate}
+
+\paragraph{Portability}
+\begin{enumerate}[resume, font=\sffamily, label={\textbf{NFR-\protect\twodigits{\theenumi}}},leftmargin=1.7cm, ref=NFR-\protect\twodigits{\theenumi}]
+	\item The system shall be compatible with a broad range of execution environments, including cloud-agnostic deployments, and shall only limit the choice in hosts if specialized hard- or software is required. Further, the system shall be self-contained and where necessary, explicitly state host-dependent features.\label{itm:nfr-portability}
+\end{enumerate}
