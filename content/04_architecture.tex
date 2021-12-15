@@ -3,14 +3,10 @@
 \chapter{Architecture}
 \label{chp:architecture}
 
-\section{Component Design}
-\subsection{Hardware}
-\subsection{Backend}
-\subsection{Maintenance and Support Plan}
+\section{Modeling as Edge Cloud Computing Problem}
+\label{sec:modeling-as-edge-cloud-problem}
 
-\section{Component Interaction}
+Driven by applications with strict time-bound requirements such as the \ac{IoT}, \ac{AI} or stream data analytics, a new computing model known as edge computing has emerged in recent years that pushes computations closer to the devices (\textit{edge}) where data is being generated \cite[p.~373]{xiong2018extend} \cite[p.~118]{alam2018orchestration}. This model does not only have the potential to improve application latency and thus, user-experience, but may also strengthen security and minimize bandwidth consumption by not having to transfer all data to centralized infrastructure (\textit{cloud})~\footnote{This centralized infrastructure may either follow an on-premise, off-premise or hybrid approach.} \cite[p.~295]{hoque2017towards}. Edge computing works complementary to the cloud, placing services at the most efficient and logical place between the producers and consumers of data \cite[p.~122]{alam2018orchestration}.
 
-\section{Component Mapping}
+Applied to the problem at hand, one can easily see how a system supporting the data collection survey outlined in \autoref{sec:data-collection-survey} resembles that of a large distributed \ac{IoT} application which leverages edge computing. Multiple geographically dispersed measurement devices gather meter data, analyze it for relevance (\textit{edge computing}), and then transfer the interesting measurements to a centralized data store for further in-depth processing (\textit{cloud computing}~\footnote{In this context, cloud computing does not necessarily imply the elasticity and self-service characteristics typically referred to (comp. \gls{cloud computing} in glossary).}). Therefore, the following sections will discuss the proposed solution's architecture in the context of edge and cloud realms, respectively.
 
-\section{Design Rationale}
-\subsection{Modeling as Cloud-Edge Computing Problem}
