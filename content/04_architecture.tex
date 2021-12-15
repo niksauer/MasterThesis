@@ -10,3 +10,69 @@ Driven by applications with strict time-bound requirements such as the \ac{IoT},
 
 Applied to the problem at hand, one can easily see how a system supporting the data collection survey outlined in \autoref{sec:data-collection-survey} resembles that of a large distributed \ac{IoT} application which leverages edge computing. Multiple geographically dispersed measurement devices gather meter data, analyze it for relevance (\textit{edge computing}), and then transfer the interesting measurements to a centralized data store for further in-depth processing (\textit{cloud computing}~\footnote{In this context, cloud computing does not necessarily imply the elasticity and self-service characteristics typically referred to (comp. \gls{cloud computing} in glossary).}). Therefore, the following sections will discuss the proposed solution's architecture in the context of edge and cloud realms, respectively.
 
+
+\section{Component Design}
+\label{sec:component-design}
+
+Striving for a component-based design represents one of the most important practices in software engineering because it facilitates developers in maintaining a complex system by decomposing it into parts that are easier to conceive, understand and program (comp.~\nameref{sec:monolith-problem} on \autopageref{sec:monolith-problem}). At the same time, the process of dismantling a system should not happen arbitrarily but rather attempt to take the application's domain structure into account to reduce the likelihood of having to remedy large parts afterwards (comp.~\nameref{sec:microservice-decomposition} on \autopageref{sec:microservice-decomposition}).  Accordingly, \autoref{fig:component-design} presents a microservice-based approach (see~\autoref{sec:microservice-definition}) to modeling the system in question. It also gives a first indication as to how the components, i.e. microservices, will interact to achieve the desired behavior.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=\textwidth]{resources/04_architecture/component-design}
+  \caption{High-level component design}
+  \label{fig:component-design}
+\end{figure}
+
+\FloatBarrier
+
+
+\subsection{Edge}
+\label{sec:component-design-edge}
+
+The edge of this system is composed by the set of measurement devices that are to be installed across the various participating households. Each measurement device will be fitted with the following set of microservices:
+
+\begin{description}[format={\storedescriptionlabel}]
+  \item[Data Aggregator\label{itm:data-aggregator}]
+  \hfill \\
+  The \ref{itm:data-aggregator} periodically (every \SI{15}{\minute}) makes measurements for each of the electricity or generation meters connected to this device. Each connection is established on the basis of a dedicated physical measurement probe. Measurements will only be taken if the participant associated with this measurement device has granted his consent. As soon as the participant revokes his consent, measurements will stop indefinitely (comp.~\autoref{sec:survey-consent}). For each measurement made, the \ref{itm:data-aggregator} will extract the set of data points that are of interest to the survey and store those, if not empty, as a new single entry in a database along with the measurement date and identifier of the meter from which it originated. The interaction model with the database can be classified as append-only.
+
+  \textbf{Realizes:} \ref{itm:survey-task-read-meters} on \autopageref{itm:survey-task-read-meters}
+
+  \item[Data Transmitter\label{itm:data-transmitter}]
+  \hfill \\
+  The \ref{itm:data-transmitter} periodically (every \SI{60}{\minute}, at minimum) transfers all of the measurements stored in the \ref{itm:data-aggregator}'s database to the cloud. Transfers are skipped if the participant associated with this measurement device has revoked or not yet granted his consent. Upon successful transfer, measurements will be deleted to avoid duplicate uploads in the future. Although this sharing of databases violates the database-per-service pattern (comp.~\autoref{sec:database-per-service-pattern}), it is still preferred due to the setup's simplicity. Otherwise, the \ref{itm:data-aggregator} would have to offer a network interface to retrieve and delete or modify measurements. This overhead is not warranted given the fact that the \ref{itm:data-aggregator} exclusively interacts with the database in an append-only mode.
+
+  \textbf{Realizes:} \ref{itm:survey-task-transmit-measurements} on \autopageref{itm:survey-task-transmit-measurements}
+
+  \item[Device Frontend\label{itm:device-frontend}]
+  \hfill \\
+  The \ref{itm:device-frontend} provides the participant associated with this device with a web-based user interface for granting and revoking his consent, viewing his registration details, as well as the measurements that have been made in and transferred from his household. Additionally, it will list the measurement devices which are in possession by that household and states to which meters and thus, \acsp{PVS}, each device is connected to. All of these details and actions are retrieved from and performed through the cloud. It shall be noted that a (desired) consequence of locating this component on the edge, rather than in the cloud, is that participants will no longer have access to this interface once they return their devices to the research group.
+
+  \textbf{Realizes:} \ref{itm:fr-grant-consent}, \ref{itm:fr-revoke-consent}, \ref{itm:fr-revoke-consent-anonymize}, \ref{itm:fr-view-registration-details}, \ref{itm:fr-view-measurements}
+\end{description}
+
+
+\subsection{Cloud}
+\label{sec:component-design-cloud}
+
+The cloud of this system is composed by the following set of microservices:
+
+\begin{description}[format={\storedescriptionlabel}]
+  \item[Data \acs{API}\label{itm:data-api}]
+  \hfill \\
+  The \ref{itm:data-api} acts as the single source of truth for each participant's registration details, consent, measurement devices and the measurements themselves. It offers a network interface to retrieve and modify these details, grant and revoke the consent, and most importantly, add and retrieve measurements to and from a central data store that is accessible to the research group. Further, it takes care of anonymizing a participant's registration details upon revocation of his consent (see~\autoref{sec:survey-anonymization}) and tracks a measurement device's version and last date of activity. It may be argued that this component has a monolithic character due to the breadth of methods offered. Yet, the number of methods is not crucial to this judgement, but rather the degree to which they are related (comp.~\autoref{sec:microservice-definition} and \autoref{sec:microservice-decomposition}).
+
+  \textbf{Enables:} \ref{itm:fr-grant-consent}, \ref{itm:fr-revoke-consent}, \ref{itm:fr-revoke-consent-anonymize}, \ref{itm:fr-view-registration-details}, \ref{itm:fr-view-measurements}, \ref{itm:fr-add-participant}, \ref{itm:fr-modify-registration-details}, \ref{itm:fr-view-consent}, \ref{itm:fr-view-health-status}
+
+  \item[Registration Frontend\label{itm:registration-frontend}]
+  \hfill \\
+  The \ref{itm:registration-frontend} will allow researchers to add new participants, modify their registration details and check whether the consent of a participant has been granted or revoked. All of these details and actions are retrieved from and performed through the \ref{itm:data-api}.
+
+  \textbf{Realizes:} \ref{itm:fr-add-participant}, \ref{itm:fr-modify-registration-details}, \ref{itm:fr-view-consent}
+
+  \item[Status Frontend\label{itm:status-frontend}]
+  \hfill \\
+  The \ref{itm:status-frontend} provides administrators with a web-based user interface for viewing the health status of each measurement device. Specifically, it will list details such as the device's version, date of the last measurement and moment of activity. For convenience, it will also state to which household and participant a device belongs and whether the participant has granted or revoked his consent. All of these details are retrieved from the \ref{itm:data-api}.
+
+  \textbf{Realizes:} \ref{itm:fr-view-health-status}
+\end{description}
