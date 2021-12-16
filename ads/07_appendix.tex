@@ -26,6 +26,88 @@
 
 \chapter{Theoretical Framework}
 
+\section{\acl{REST}}
+\label{sec:rest}
+
+Coined and theorized by \citeauthor{fielding2000architectural}, \ac{REST} stands for an architectural style of distributed hypermedia systems that was motivated by the need to create a model for how the modern Web should work, thereby serving as the guiding framework for Web protocol standards such as \acs{HTTP} and \acs{URI} \cite[pp.~76,~107]{fielding2000architectural}.
+
+Like any software architecture, this named set of constraints intends to outline how a well-designed network-based application behaves, i.e. how the system is partitioned and how components communicate \cite[p.~xvi]{fielding2000architectural}, rather than deciding on the protocol selection or focusing on implementation details and syntax \cite[pp.~86,~109]{fielding2000architectural}.
+
+
+\subsection{Concepts}
+\label{sec:rest-concepts}
+
+Derived from several other pre-existing architectures \cite[p.~76]{fielding2000architectural}, \ac{REST} is best explained as a combination of the following architectural styles and constraints:
+
+\begin{description}[format={\storedescriptionlabel}]
+	\item[Client-Server]
+	\hfill \\
+	The principle of separation of concerns allows components to evolve independently. By splitting the user interface engine concerns (\textit{client}) from data storage concerns (\textit{server}), portability and scalability improve \cite[p.~78]{fielding2000architectural}.
+	\item[Stateless]
+	\hfill \\
+	Each interaction (\textit{request}) between client and server must contain enough information to be processed in isolation (\textit{self-descriptiveness}) \cite[pp.~78--79]{fielding2000architectural}. In turn, this enables parallel processing and allows intermediaries (\textit{proxy}) to view and understand a request without accessing server context (\textit{session state}). Server-side scalability also improves as no resources have to be dedicated to store state in-between requests \cite[pp.~79, 93]{fielding2000architectural}. By nature, this has the design trade-off of increasing repetitive-data and thus decreasing network performance.
+	\item[Cache]
+	\hfill \\
+	Data returned by a server (\textit{response}) may be implicitly or explicitly labeled as cacheable or non-cacheable. In some cases, the cache may entirely eliminate interactions, again improving efficiency, scalability, and user-perceived performance, though caution must be taken since reliability issues may arise through stale data \cite[pp.~79--80]{fielding2000architectural}.
+	\item[Uniform Interface]
+	\hfill \\
+	While a standardized component interaction interface simplifies the overall system architecture, it disregards the efficiency improvements that can be gained from an application-level decision of such \cite[pp.~81--82]{fielding2000architectural}. The exact communication constraints are discussed in \autoref{sec:rest-component-interaction}.
+\end{description}
+
+
+\subsection{Component Interaction}
+\label{sec:rest-component-interaction}
+
+The key abstraction in \ac{REST} is a \textit{resource} which refers to any kind of information that can be named, such as a \cite[p.~88]{fielding2000architectural}:
+
+\begin{itemize}
+  \item document or image
+  \item temporal service (e.g. the current weather in Berlin)
+  \item collection of resources
+  \item non-virtual object (e.g. a student)
+\end{itemize}
+
+A resource's value may be static or variable (document vs. current weather), though in any case the semantics, i.e. what distinguishes one resource from another, must remain the same \cite[p.~89]{fielding2000architectural}.
+
+From here on, \citeauthor{fielding2000architectural} explain that \ac{REST} components perform actions on a resource by exchanging stateless messages composed of \cite[pp.~90--91]{fielding2000architectural}:
+
+\begin{description}[format={\storedescriptionlabel}]
+	\item[Resource Identifier]
+	\hfill \\
+	Unique identifier used to address that particular resource.
+	\item[Representation]
+	\hfill \\
+	Depending on the \textit{control data}, the representation may capture the current or intended state of a requested resource, value of a different resource (e.g. user input) or an error condition.
+	\item[Representation Metadata]
+	\hfill \\
+	Describes the supplied representation.
+	\item[Resource Metadata]
+	\hfill \\
+	Information about the resource that is not specific to the supplied representation.
+	\item[Control Data]
+	\hfill \\
+	Defines the message's purpose such as the action requested or meaning of the response. Can also be used to parameterize requests or override default behavior.
+\end{description}
+
+It shall be noted that a message originating from a client component may include different fields than that delivered by a server component in response \cite[pp.~93--94]{fielding2000architectural}. This discrepancy is displayed in \autoref{tab:rest-message-fields}.
+
+\begin{table}[hbt]
+	\centering
+  	\begin{tabular}{l|c|c}
+	    Field & Request Message & Response Message \\
+	    \hline
+	    Resource Identifier 	& x & - \\
+	    Representation 			& optional & optional \\
+	    Resource Metadata 		& - & optional \\
+	    Control Data 			& x & x \\
+	\end{tabular}
+  	\caption{In- and out-parameters of a \acs{REST} component interaction}
+  	\label{tab:rest-message-fields}
+\end{table}
+
+The final constraint to component interaction is a concept called \ac{HATEOAS} \cite[p.~82]{fielding2000architectural}. Even though \citeauthor{fielding2000architectural}'s dissertation did not fully elaborate on this aspect, he re-emphasized its importance in the coming years and would not accept an \acs{API}'s \textit{\ac{REST}ful} labelling if absent \cite{fielding2008hypertext}. In essence, an application's control state must be included in the resource representation returned by a server \cite[p.~102]{fielding2000architectural}, thereby explicitly stating the actions a client may perform on that resource at that specific point in time. Of course, the list of permitted actions could change in response to any previous one taken.
+
+
 \section{Continuous Integration and Deployment}
 \label{sec:continuous-integration-deployment}
 
@@ -68,6 +150,9 @@ Admittedly, most organizations will, however, settle on a less continuous proces
 Irrespective of the level practiced, the pipelines used for these purposes (comp.~\autoref{sec:continuous-integration}) will likely be extended with more tests (e.g. system and performance), as well as methods to roll back releases on failures \cite[pp.~52--53]{chen2015continuous}. \ac{CD} can of course also be combined with advanced deployment strategies such as using a secondary environment for beta testing (\textit{staging}), switching traffic between two identical environments as testing completes (\textit{blue / green}) or releasing changes off peak or out of user reach to test scalability and performance (\textit{dark launch}) \cite[p.~23]{savor2016continuous}.
 
 
+%\section{Certificate-based Authentication}
+
+
 \chapter{Concept}
 \label{app:concept}
 
@@ -77,22 +162,6 @@ Irrespective of the level practiced, the pipelines used for these purposes (comp
   \caption{System use cases}
   \label{fig:system-use-cases}
 \end{figure}
-
-\pagebreak
-\FloatBarrier
-
-\chapter{Architecture}
-\label{app:architecture}
-
-\section{Representational State Transfer (REST)}
-
-\section{Certificate-based Authentication}
-
-\pagebreak
-\FloatBarrier
-
-\chapter{Conclusion}
-\label{app:conclusion}
 
 \pagebreak
 \FloatBarrier
