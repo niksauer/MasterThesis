@@ -81,9 +81,221 @@ The cloud of this system is composed by the following set of microservices:
 \section{Component Specification}
 \label{sec:component-specification}
 
+Having given a high-level overview of the components comprising the system, this section will formalize core aspects of the system's two most important microservices.
 
-\section{Component Mapping}
-\label{sec:component-mapping}
+\subsection{\ref{itm:data-api}}
+\label{sec:component-specification-data-api}
+
+\subsubsection{Data Model}
+\label{sec:data-api-data-model}
+
+Given the possibility that one human may wish to act as the contact person of two households which participate in the data collection survey (e.g. his own household and that of his parents), this component will model all data around a logical \texttt{Household} entity rather than that of a \texttt{User}. However, the contact details provided as part of the registration (see~\autoref{sec:survey-registration}) do still semantically belong to an individual user, i.e. the participant. These considerations lead to the initial \ac{ERM} given in \autoref{fig:data-api-erm-user-household}.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.9\textwidth]{resources/04_architecture/data-api-erm-1}
+  \caption{Modeling of participants and households}
+  \label{fig:data-api-erm-user-household}
+\end{figure}
+
+\FloatBarrier
+
+Next, the answers to the location and metadata subjects of the registration form may be modeled as entities of the same names as shown in \autoref{fig:data-api-erm-household-metadata-address}.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.9\textwidth]{resources/04_architecture/data-api-erm-2}
+  \caption{Modeling of a household's metadata and address}
+  \label{fig:data-api-erm-household-metadata-address}
+\end{figure}
+
+\FloatBarrier
+
+Here, the decision to model the relationship as foreign keys with a unique constraint on the \texttt{Metadata} and \texttt{Address} entities shall be noted. This will lead to a \texttt{0..1} cardinality, meaning that this data does not necessarily have to be supplied for an individual household, even if its presence will be enforced on the application layer\todo{explain intention}. The same result may be achieved through nullable foreign keys on the \texttt{Household} entity, although that approach would necessitate a primary key on the \texttt{Metadata} and \texttt{Address} entities which makes less sense conceptually since these details shall not exist on their own.
+
+Before the remaining registration details are modeled, two types of constants shall be introduced. These constants will be used to differentiate electricity and generation meters, as well as to specify the model number of a meter itself. The latter is needed because the steps to take measurements from a meter will likely vary across models.
+
+\begin{multicols}{2}
+
+\paragraph{\texttt{MeterType}}
+\begin{itemize}
+  \item \texttt{electricity}
+  \item \texttt{pv-generation}
+\end{itemize}
+
+\vfill\null
+\columnbreak
+
+\paragraph{\texttt{MeterModelNumber}}
+\begin{itemize}
+  \item \texttt{mt681}
+  \item \texttt{mt175}
+  \item \texttt{ehz}
+  \item \texttt{dd3}
+  \item \texttt{easy}
+\end{itemize}
+
+\end{multicols}
+
+Based on these constants, \autoref{fig:data-api-erm-household-meter-device-pv} models the relationship between a household's meters and \acsp{PVS}. It also associates each meter with a measurement device to indicate how these objects will be physically connected to each other later. As mentioned in the component design, this \texttt{MeasurementDevice} entity will need to track the device's version and date of last activity. Recalling the fact that microservices are deployed independently (comp.~\autoref{sec:microservice-definition}), the device's version will need to be split across multiple attributes, each tracking a different component running on the edge.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.9\textwidth]{resources/04_architecture/data-api-erm-3}
+  \caption{Modeling of a household's meters, \acsp{PVS} and measurement devices}
+  \label{fig:data-api-erm-household-meter-device-pv}
+\end{figure}
+
+\FloatBarrier
+
+Now, only runtime-generated data is missing. Beginning with a participant's consent, \autoref{fig:data-api-erm-household-consent} details how the participation status of a household may be modeled. Again, this consent is associated with the \texttt{Household} entity rather than the \texttt{User} entity because one household may wish to stop sharing data earlier than the other.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.9\textwidth]{resources/04_architecture/data-api-erm-4}
+  \caption{Modeling of a participant's consent}
+  \label{fig:data-api-erm-household-consent}
+\end{figure}
+
+\FloatBarrier
+
+Finally, the measurements taken from and transmitted for a particular meter are modeled in \autoref{fig:data-api-erm-meter-measurement}.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.9\textwidth]{resources/04_architecture/data-api-erm-5}
+  \caption{Modeling of a meter's measurements}
+  \label{fig:data-api-erm-meter-measurement}
+\end{figure}
+
+\FloatBarrier
+
+Of special note is the \acs{JSON} \texttt{data} attribute on the \texttt{Measurement} entity which will contain the actual data points that have been observed for a meter at a given point in time. In turn, this means that measurements will be stored in a denormalized manner. The shape and amount of data will vary across measurements. Several factors contribute to this modeling decision:
+
+\begin{itemize}
+  \item electricity and generation meters inherently produce different data
+  \item different meter models may expose different data
+  \item the data points of interest may vary across households and regions
+\end{itemize}
+
+As a result, the responsibility to ensure a consistent representation of measurement data is pushed to the application layer.
+
+
+\paragraph{Anonymization Considerations}
+In light of the data protection requirements formulated in \autoref{sec:survey-anonymization}, the data model shall be briefly verified for compatibility with the anonymization strategy presented therein.
+
+\ref{itm:anonymization-step-remove-contact} is supported through the nullable foreign \texttt{User} entity key modeled on the \texttt{Household} entity which allows households to exist without participants and thus, without any contact details (comp.~\autoref{fig:data-api-erm-user-household}). On the other hand, \ref{itm:anonymization-step-anonymize-pvs} can be easily realized by modifying the attributes of a particular \acs{PVS} instance. However, because the \texttt{PhotovoltaicSystem} entity tracks the installation date as a \texttt{DATETIME}, this attribute will have to be normalized by setting the date to, for example, the first day of the year, rather than removing the date entirely and only keeping the year (comp.~\autoref{fig:data-api-erm-household-meter-device-pv}).
+
+Lastly, even though \ref{itm:anonymization-step-anonymize-pvs} could be implemented based on the current data model, the following change should be made to further simplify the component's realization. It may be argued that because the process of generating a random location within a larger area is a geospatial operation, i.e. an algorithm which deals with geographic coordinate inputs\todo{add citation}, the component performing such an operation should also maintain geographic coordinates for the models on which it is operating. Currently, however, the \texttt{Household} entity is only associated with an \texttt{Address} entity that resembles a postal address. Therefore, an additional \texttt{Location} entity is introduced in \autoref{fig:data-api-erm-household-location}.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.9\textwidth]{resources/04_architecture/data-api-erm-6}
+  \caption{Modeling of a household's location}
+  \label{fig:data-api-erm-household-location}
+\end{figure}
+
+This location should be created simultaneously with the household's address but will then, eventually, outlive it once the anonymization has taken place. To create the initial location, the geographic coordinates which, in this case, are modeled as the latitude and longitude in the \ac{GPS}, may be retrieved based on the household's address (\textit{geocoding})\todo{add citation}.
+
+
+\subsubsection{Service Interface}
+\label{sec:data-api-service-interface}
+
+While the microservice pattern does not dictate any specific kind of network interface for exposing a service's methods (comp.~\autoref{sec:microservice-definition}), \acs{REST} \acsp{API} have become ubiquitous and represent the de-facto industry standard approach \footnote{A full discussion on the principles of \acs{REST} is given in the \autoref{app:theoretical-framework} on \autopageref{sec:rest}.}\todo{add citation}. For that reason, \autoref{tab:data-api-endpoints} breaks down the service's functionalities into a set of \acs{HTTP}-based \acs{REST} endpoints and maps each endpoint to the requirements satisfied thereof. A complete documentation based on the \ac{OAS} format is available as part of this thesis' hand-in.
+
+\begin{table}[hbt]
+	\centering
+  	\begin{tabularx}{\textwidth}{|c|c|l|X|}
+		\hline
+		\textbf{\#} & \textbf{Method} & \textbf{Path} & \textbf{Requirements} \\
+	    \hline
+	    \labeltext[Endpoint~1]{1}{itm:data-endpoint-1} & \texttt{GET} & \texttt{/account} & \ref{itm:fr-view-registration-details} \\
+	    \labeltext[Endpoint~2]{2}{itm:data-endpoint-2} & \texttt{GET} & \texttt{/household} & \ref{itm:fr-view-registration-details} \\
+	    	\labeltext[Endpoint~3]{3}{itm:data-endpoint-3} & \texttt{POST} & \texttt{/household/consent} & \ref{itm:fr-grant-consent} \\
+	    	\labeltext[Endpoint~4]{4}{itm:data-endpoint-4} & \texttt{DELETE} & \texttt{/household/consent} & \ref{itm:fr-revoke-consent}, \ref{itm:fr-revoke-consent-anonymize} \\
+	    \labeltext[Endpoint~5]{5}{itm:data-endpoint-5} & \texttt{GET} & \texttt{/household/measurement\_device} & \\
+	    	\labeltext[Endpoint~6]{6}{itm:data-endpoint-6} & \texttt{GET} & \texttt{/household/meter} & \ref{itm:fr-view-registration-details} \\
+	    \labeltext[Endpoint~7]{7}{itm:data-endpoint-7} & \texttt{GET} & \texttt{/household/meter/:uuid/measurement} & \ref{itm:fr-view-measurements} \\
+	    \labeltext[Endpoint~8]{8}{itm:data-endpoint-8} & \texttt{POST} & \texttt{/household/meter/measurement} & \ref{itm:survey-task-read-meters} \\
+	    	\labeltext[Endpoint~9]{9}{itm:data-endpoint-9} & \texttt{GET} & \texttt{/household/pv\_system} & \ref{itm:fr-view-registration-details} \\
+	    \labeltext[Endpoint~10]{10}{itm:data-endpoint-10} &	\texttt{GET} & \texttt{/management/household} & \ref{itm:fr-view-consent}, \ref{itm:fr-view-health-status} \\
+	    	\hline
+	\end{tabularx}
+  	\caption{Data \acs{API} endpoints mapped to requirements}
+  	\label{tab:data-api-endpoints}
+\end{table}
+
+\FloatBarrier
+
+
+\subsubsection{Access Control}
+\label{sec:data-api-access-control}
+
+Since this microservice will be publicly exposed for consumption by the edge clients, as well as the \ref{itm:registration-frontend} and \ref{itm:status-frontend} (comp.~\autoref{fig:component-design}), appropriate measures must be put into place to protect the component from unauthorized access. In terms of access control, authentication and authorization are key to these concerns.
+
+\begin{description}
+
+  \item[Authentication\label{itm:data-api-authentication}]
+  \hfill \\
+  The component will need to implement some form of authentication in order to verify the identify of the user, i.e. the participant, researcher or administrator, for whom access to a service is requested. Verification typically happens on the basis of something that the requesting party should know (e.g. password), posses (e.g. access card) or incarnate (e.g. biometrics)\todo{add citation}.
+
+  \paragraph{Edge clients}
+  Edge clients will need to posses a digital certificate and present it with every request. Such certificates are generally used to prove the ownership of a public key by carrying an appropriate signature\todo{add citation}. Moreover, they can be extended with additional metadata that is then also attested by the signature \cite[p.~37]{hummen2013towards}. Based on these cryptographic guarantees, the component will authenticate requests by matching the metadata encoded in a certificate against the stored participant registration details. In particular, it will expect each certificate to encode an email address that belongs to a participant. This lookup scheme is supported by the fact that the \texttt{email} attribute in the \texttt{User} entity has been modeled with a unique constraint (comp.~\autoref{fig:data-api-erm-user-household}), ensuring that any given email address can, at most, identify one participant. Of course, the signature of the presented certificate must also be checked to ensure that it comes from a public key which is exclusively owned by this component or some trusted party associated with the data collection survey. Otherwise, requesting parties could self-attest their identity.
+
+  The main benefit of this authentication method is the ability to preload edge devices with certificates~\footnote{The patent presented in \cite{etchegoyen2013device} describes a method for binding digital certificates to one or more devices. In case of a breach, access for individual devices, rather than users, can be revoked.}~\footnote{\citeauthor{ammar2018internet} warn that embedding a key in a device can represent a security risk, if not regularly rotated, since, eventually, all cryptographic algorithms will be broken \cite[p.~23]{ammar2018internet}.}. In theory, this allows a measurement device to transmit data as soon as it is connected to a meter.
+
+  \paragraph{\ref{itm:registration-frontend} and \ref{itm:status-frontend}}
+  These frontends will need to know a shared secret and present it with every request. The secret will collectively identify the research or administrator group, meaning that individual researchers and administrators are not discerned. Such differentiation is not needed as per the requirements presented in \autoref{sec:functional-requirements}.
+
+  \item[Authorization\label{itm:data-api-authorization}]
+  \hfill \\
+  Once users have been identified and authenticated, the component will need to determine whether they are authorized to use the requested service method. Therefore, \autoref{tab:data-api-endpoints-user-groups} details which user group shall be permitted to which of the service's endpoints. \autoref{tab:data-api-endpoints-permission-scopes} further specifies which set of permissions (\textit{scope}) a user must have to access a particular service endpoint.
+
+\begin{table}[hbt]
+	\centering
+  	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{User Group} & \textbf{Endpoints} \\
+	    \hline
+	    Participants & \ref{itm:data-endpoint-1} -- \ref{itm:data-endpoint-9} \\
+		Administrators & \ref{itm:data-endpoint-10} \\
+	    	\hline
+	\end{tabularx}
+  	\caption{Data \acs{API} endpoints mapped to user groups}
+  	\label{tab:data-api-endpoints-user-groups}
+\end{table}
+
+\FloatBarrier
+
+\begin{table}[hbt]
+	\centering
+  	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Scope} & \textbf{Endpoints} \\
+	    \hline
+	    \texttt{account} & \ref{itm:data-endpoint-1} \\
+		\texttt{household} & \ref{itm:data-endpoint-2}, \ref{itm:data-endpoint-5}, \ref{itm:data-endpoint-6}, \ref{itm:data-endpoint-9} \\
+		\texttt{consent} & \ref{itm:data-endpoint-3}, \ref{itm:data-endpoint-4} \\
+		\texttt{measurement-read} & \ref{itm:data-endpoint-7} \\
+		\texttt{measurement-write} & \ref{itm:data-endpoint-8} \\
+	    	\hline
+	\end{tabularx}
+  	\caption{\ref{itm:data-api} endpoints mapped to permission scopes}
+  	\label{tab:data-api-endpoints-permission-scopes}
+\end{table}
+
+\FloatBarrier
+
+	Scopes support the principle of least privilege. For instance, the \ref{itm:data-transmitter} only needs the \texttt{measurement-write} scope to perform its primary task of uploading measurements (in addition to the \texttt{consent} scope to check whether uploads may take place), whereas the \ref{itm:device-frontend} requires the \texttt{measurement-read} scope to retrieve individual measurements for display. These scopes may be granted based on the user's group or other metadata which is encoded in a certificate~\cite[p.~1]{butt2004certificate}.
+\FloatBarrier
+
+\end{description}
+
+With regard to shielding data from one participant from that of another, the service interface has already been designed from the perspective of the currently authenticated user (comp.~\ref{itm:data-endpoint-1} -- \ref{itm:data-endpoint-9} in \autoref{tab:data-api-endpoints}). Hence, no additional access control measures are needed.
+
+
+\section{Component Realization}
+\label{sec:component-realization}
 
 
 \section{Deployment Model}
