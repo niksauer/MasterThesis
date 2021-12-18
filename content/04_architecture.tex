@@ -294,6 +294,62 @@ Since this microservice will be publicly exposed for consumption by the edge cli
 With regard to shielding data from one participant from that of another, the service interface has already been designed from the perspective of the currently authenticated user (comp.~\ref{itm:data-endpoint-1} -- \ref{itm:data-endpoint-9} in \autoref{tab:data-api-endpoints}). Hence, no additional access control measures are needed.
 
 
+\subsection{\ref{itm:data-aggregator}}
+\label{sec:component-specification-data-aggregator}
+
+\subsubsection{Data Model}
+\label{sec:data-aggregator-data-model}
+
+In true microservice fashion, this component will only need to model a single entity which is precisely that of a measurement taken from a meter. Its attributes match those of the \texttt{Measurement} entity introduced in \autoref{fig:data-api-erm-meter-measurement}, except that the \texttt{meter} attribute cannot be modeled as a foreign key. This difference is shown in \autoref{fig:data-aggregator-erm}.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.38\textwidth]{resources/04_architecture/data-aggregator-erm}
+  \caption{Modeling an edge client's measurements}
+  \label{fig:data-aggregator-erm}
+\end{figure}
+
+Recalling the fact that the application layer is responsible for ensuring a consistent representation of measurement data, a short explanation shall be given as to how this will be achieved. Since the data collection survey is particularly interested in meters which utilize the \acf{SML} communication protocol to expose internal measurement data (see~\autoref{sec:survey-overview}), its representation of measured values (e.g. counter readings or specific amounts of energy) is decisive for this question. The \ac{SML} protocol uses the \ac{OBIS} to denote data items in metering equipment. Its codes have been standardized in \acs{IEC} 62056-6-1 \cite{iec2017obis}. For this survey, the \ac{OBIS} codes listed in \autoref{tab:relevant-obis-codes} are most relevant\todo{link to all codes}.
+
+\begin{table}[hbt]
+	\centering
+  	\begin{tabularx}{\textwidth}{|l|l|X|}
+		\hline
+		\textbf{Hex Code} & \textbf{Short Code} & \textbf{Description} \\
+	    \hline
+	    \texttt{0100010800ff} & \texttt{1.8.0} & Positive active energy total (in \si{\kilo\watt\hour}) \\
+	    	\texttt{0100020800ff} & \texttt{2.8.0} & Negative active energy total (in \si{\kilo\watt\hour}) \\
+	    \texttt{0100010700ff} & \texttt{1.7.0} & Positive active instantaneous power (in \si{\kilo\watt}) \\
+	    \texttt{0100020700ff} & \texttt{2.7.0} & Negative active instantaneous power (in \si{\kilo\watt}) \\
+	    	\texttt{0100100700ff} & \texttt{16.7.0} & Sum active instantaneous power (in \si{\kilo\watt}) \\
+	    	\hline
+	\end{tabularx}
+  	\caption{Relevant \acs{OBIS} codes in metering equipment}
+  	\label{tab:relevant-obis-codes}
+\end{table}
+
+\FloatBarrier
+
+Given these codes, the component will store the relevant measurement data as a \acs{JSON} array of objects that map each observed \acs{OBIS} code to the value observed for that code. However, because the \acs{OBIS} short code is not uniquely identifiable~\footnote{\ac{OBIS} short codes do not carry the physical medium and channel from which data was generated \cite{promoticObis}.}, the hexadecimal representation shall be used.
+
+
+\subsubsection{Control Flow}
+\label{sec:data-aggregator-control-flow}
+
+Although the component's overall control flow has already been discussed in \autoref{sec:component-design-edge} on \autopageref{itm:data-aggregator}, one crucial aspect has not been mentioned so far. Namely that the electricity and generation meters installed in a household may be factory locked. This means that a meter may not expose all of its internal measurement data via the \ac{SML}-based interface. Therefore, it will be necessary to monitor the input stream for the expected \acs{OBIS} codes (see~\autoref{tab:relevant-obis-codes}), and attempt an unlock if the condition appears to persist over a longer period of time. This revised control flow is depicted in \autoref{fig:data-aggregator-control-flow}.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=\textwidth]{resources/04_architecture/data-aggregator-flowchart}
+  \caption{Control flow of \ref{itm:data-aggregator}}
+  \label{fig:data-aggregator-control-flow}
+\end{figure}
+
+\FloatBarrier
+
+Unlocking a meter involves entering a \acs{PIN} code. This code will, in the most cases, have to be obtained from the household's energy supplier. The actual \acs{PIN} input may then happen physically in advance to this survey or programmatically at runtime through the meter's light-based interface (comp.~\autoref{sec:survey-overview}).
+
+
 \section{Component Realization}
 \label{sec:component-realization}
 

@@ -1,0 +1,217 @@
+{
+	"_type": "Project",
+	"_id": "AAAAAAFF+h6SjaM2Hec=",
+	"name": "Untitled",
+	"ownedElements": [
+		{
+			"_type": "ERDDataModel",
+			"_id": "AAAAAAF9zu8rf7KgMvU=",
+			"_parent": {
+				"$ref": "AAAAAAFF+h6SjaM2Hec="
+			},
+			"name": "Data Model1",
+			"ownedElements": [
+				{
+					"_type": "ERDDiagram",
+					"_id": "AAAAAAF9zu8rf7Khu38=",
+					"_parent": {
+						"$ref": "AAAAAAF9zu8rf7KgMvU="
+					},
+					"name": "ERDDiagram1",
+					"ownedViews": [
+						{
+							"_type": "ERDEntityView",
+							"_id": "AAAAAAF9zu85NrKnm6w=",
+							"_parent": {
+								"$ref": "AAAAAAF9zu8rf7Khu38="
+							},
+							"model": {
+								"$ref": "AAAAAAF9zu85NrKl11U="
+							},
+							"subViews": [
+								{
+									"_type": "LabelView",
+									"_id": "AAAAAAF9zu85NrKonME=",
+									"_parent": {
+										"$ref": "AAAAAAF9zu85NrKnm6w="
+									},
+									"font": "Arial;13;1",
+									"left": 40,
+									"top": 37,
+									"width": 193.744140625,
+									"height": 13,
+									"text": "Measurement"
+								},
+								{
+									"_type": "ERDColumnCompartmentView",
+									"_id": "AAAAAAF9zu85N7KpoeU=",
+									"_parent": {
+										"$ref": "AAAAAAF9zu85NrKnm6w="
+									},
+									"model": {
+										"$ref": "AAAAAAF9zu85NrKl11U="
+									},
+									"subViews": [
+										{
+											"_type": "ERDColumnView",
+											"_id": "AAAAAAF9zu9n2bK1g3I=",
+											"_parent": {
+												"$ref": "AAAAAAF9zu85N7KpoeU="
+											},
+											"model": {
+												"$ref": "AAAAAAF9zu9n0rKyTDM="
+											},
+											"font": "Arial;13;0",
+											"left": 45,
+											"top": 60,
+											"width": 183.744140625,
+											"height": 13
+										},
+										{
+											"_type": "ERDColumnView",
+											"_id": "AAAAAAF9zvTvK7LZL8w=",
+											"_parent": {
+												"$ref": "AAAAAAF9zu85N7KpoeU="
+											},
+											"model": {
+												"$ref": "AAAAAAF9zvTvJrLWy1U="
+											},
+											"font": "Arial;13;0",
+											"left": 45,
+											"top": 75,
+											"width": 183.744140625,
+											"height": 13
+										},
+										{
+											"_type": "ERDColumnView",
+											"_id": "AAAAAAF9zvAftLLDk7c=",
+											"_parent": {
+												"$ref": "AAAAAAF9zu85N7KpoeU="
+											},
+											"model": {
+												"$ref": "AAAAAAF9zvAfr7LABfw="
+											},
+											"font": "Arial;13;0",
+											"left": 45,
+											"top": 90,
+											"width": 183.744140625,
+											"height": 13
+										},
+										{
+											"_type": "ERDColumnView",
+											"_id": "AAAAAAF9zvACqrK8iX8=",
+											"_parent": {
+												"$ref": "AAAAAAF9zu85N7KpoeU="
+											},
+											"model": {
+												"$ref": "AAAAAAF9zvACpLK51iM="
+											},
+											"font": "Arial;13;0",
+											"left": 45,
+											"top": 105,
+											"width": 183.744140625,
+											"height": 13
+										},
+										{
+											"_type": "ERDColumnView",
+											"_id": "AAAAAAF9zvNm6LLPy5w=",
+											"_parent": {
+												"$ref": "AAAAAAF9zu85N7KpoeU="
+											},
+											"model": {
+												"$ref": "AAAAAAF9zvNm47LM/i8="
+											},
+											"visible": false,
+											"font": "Arial;13;0",
+											"left": -499,
+											"top": -399,
+											"width": 183.744140625,
+											"height": 13
+										}
+									],
+									"font": "Arial;13;0",
+									"left": 40,
+									"top": 55,
+									"width": 193.744140625,
+									"height": 68
+								}
+							],
+							"font": "Arial;13;0",
+							"left": 40,
+							"top": 32,
+							"width": 193.744140625,
+							"height": 91,
+							"nameLabel": {
+								"$ref": "AAAAAAF9zu85NrKonME="
+							},
+							"columnCompartment": {
+								"$ref": "AAAAAAF9zu85N7KpoeU="
+							}
+						}
+					]
+				},
+				{
+					"_type": "ERDEntity",
+					"_id": "AAAAAAF9zu85NrKl11U=",
+					"_parent": {
+						"$ref": "AAAAAAF9zu8rf7KgMvU="
+					},
+					"name": "Measurement",
+					"columns": [
+						{
+							"_type": "ERDColumn",
+							"_id": "AAAAAAF9zu9n0rKyTDM=",
+							"_parent": {
+								"$ref": "AAAAAAF9zu85NrKl11U="
+							},
+							"name": "uuid",
+							"type": "UUID",
+							"length": 0,
+							"primaryKey": true
+						},
+						{
+							"_type": "ERDColumn",
+							"_id": "AAAAAAF9zvTvJrLWy1U=",
+							"_parent": {
+								"$ref": "AAAAAAF9zu85NrKl11U="
+							},
+							"name": "meter",
+							"type": "UUID",
+							"length": 0
+						},
+						{
+							"_type": "ERDColumn",
+							"_id": "AAAAAAF9zvAfr7LABfw=",
+							"_parent": {
+								"$ref": "AAAAAAF9zu85NrKl11U="
+							},
+							"name": "data",
+							"type": "JSON",
+							"length": 0
+						},
+						{
+							"_type": "ERDColumn",
+							"_id": "AAAAAAF9zvACpLK51iM=",
+							"_parent": {
+								"$ref": "AAAAAAF9zu85NrKl11U="
+							},
+							"name": "measured_at",
+							"type": "DATETIME",
+							"length": 0
+						},
+						{
+							"_type": "ERDColumn",
+							"_id": "AAAAAAF9zvNm47LM/i8=",
+							"_parent": {
+								"$ref": "AAAAAAF9zu85NrKl11U="
+							},
+							"name": "reported_at",
+							"type": "DATETIME",
+							"length": 0
+						}
+					]
+				}
+			]
+		}
+	]
+}
