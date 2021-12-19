@@ -354,6 +354,35 @@ Unlocking a meter involves entering a \acs{PIN} code. This code will, in the mos
 \label{sec:component-realization}
 
 
+\subsection{Certificate-based Authentication}
+\label{sec:certificate-based-authentication}
+
+The certificate-based authentication scheme outlined in \autoref{sec:data-api-access-control} on \autopageref{itm:data-api-authentication} is already standardized as an extension to the \acs{TLS} protocol, known as \ac{mTLS}.
+
+Whereas \acs{TLS} is traditionally used to ensure the secrecy and integrity of data exchanged in a \acs{TCP} connection, as well as to authenticate the server with which a client is communicating, \acs{mTLS} offers a way for clients to authenticate themselves to servers, if requested, without having to disclose a shared secret \cite[p.~1]{parsovs2013practical}. For that purpose, the \acs{TLS} handshake has been extended with an optional \texttt{CertificateRequest} message. This message includes a list of \acp{DN} of \acp{CA} that the server trusts, i.e. a list of parties from which certificates must originate. Based on this list, clients can select one or more certificates and respond to the server's authentication request with a \texttt{Certificate} message. These certificates must follow the X.509 standard as defined by the \ac{ITU}. Finally, the client will have to prove access to the private key corresponding to the public key referenced in the certificate. This is done by calculating and signing a hash of all previous handshake messages which is then sent to the server for verification in a \texttt{CertificateVerify} message. It is exactly this randomness that prevents a signature and thus, the certificate, to be exploited in and be susceptible to phishing and replay attacks. Even if an attacker obtains the signature in a \acs{MITM} attack, he cannot impersonate the victim \cite[p.~2]{parsovs2013practical}.
+
+\acs{mTLS} is suitable to this application context because the service interface of the \ref{itm:data-api} is based on \acs{HTTP} (comp.~\autoref{sec:data-api-service-interface}) which, in turn, leverages \acs{TCP}. To successfully use this technology, the system will have to:
+
+\begin{itemize}
+  \item establish its own \acs{CA} or trust a third party
+  \item issue X.509 certificates that encode the participant's email address and, optionally, the required scopes (comp.~\autoref{sec:data-api-access-control})
+  \item embed a certificate in each measurement device
+  \item verify the certificate presented with each request~\footnote{\citeauthor{parsovs2013practical} recommends using the \acs{TLS} session resumption feature to avoid an additional network round-trip and private key operation on repeated requests \cite[p.~3]{parsovs2013practical}.}
+\end{itemize}
+
+For these tasks, an extensive amount of infrastructure, tools and expertise can be reused \cite[p.~37]{hummen2013towards}.
+
+
+\paragraph{\ref{itm:device-frontend} Considerations}
+It shall be noted that \acl{JS} lacks \acsp{API} to comfortably interact with a browser's client certificate store. For instance, it is not possible to implement a logout functionality that clears the current session's certificate choice \cite[p.~8]{parsovs2013practical}. Such functionality, however, is required in client-side web applications, such as the \ref{itm:device-frontend}, which should be protected from unauthorized access. Moreover, using certificate-based authentication in such applications assumes that users have access to certificates. In this application context, however, certificates are only embedded in measurement devices. And since these measurement devices are headless (comp.~\autoref{sec:survey-overview}), participants will be required to use another, separate device to access the \ref{itm:device-frontend}. This problem can be solved be either:
+
+\begin{itemize}
+  \item sharing the certificate with the participant so that he can add it to each of the devices used to access the frontend
+  \item funneling each of the frontend's requests through another component (\textit{proxy}) running on the measurement device
+\end{itemize}
+
+For the sake of user experience, as well as security concerns, the latter option should be preferred~\footnote{Participants would become responsible for configuring certificates in their browsers. This may represent a hurdle in itself. Further, no guarantees can be made about their browsers' security. In the worst case, certificates may leak and be used to impersonate a participant.}.
+
 \section{Deployment Model}
 \label{sec:deployment-model}
 
