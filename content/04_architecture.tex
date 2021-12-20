@@ -383,6 +383,37 @@ It shall be noted that \acl{JS} lacks \acsp{API} to comfortably interact with a 
 
 For the sake of user experience, as well as security concerns, the latter option should be preferred~\footnote{Participants would become responsible for configuring certificates in their browsers. This may represent a hurdle in itself. Further, no guarantees can be made about their browsers' security. In the worst case, certificates may leak and be used to impersonate a participant.}.
 
+
+\subsection{Anonymization of Location}
+\label{sec:anonymization-of-location-realization}
+
+The task of anonymizing a household's location in compliance with \autoref{sec:survey-anonymization} can be split into two main steps:
+
+\begin{enumerate}[label=(\Alph*)]
+  \item \labeltext[Step~(A)]{calculate distance bounds $d_{\text{min}}$ and $d_{\text{max}}$ according to \autoref{eq:anonymize-location-min-max-distance}}{itm:location-anonymization-step-calculate-bounds}
+  \item \labeltext[Step~(B)]{generate random location that has a distance ($d$) from the household's location which satisfies $d_{\text{min}} \leq d \leq d_{\text{max}}$}{itm:location-anonymization-step-generate-random-location}
+\end{enumerate}
+
+Beginning with \ref{itm:location-anonymization-step-calculate-bounds}, an algorithm will, for any given household, first need to lookup the population density per square kilometer ($\rho_N$). Of course, this density will greatly depend on the chosen granularity (e.g. state, province or region). For Europe, the \ac{NUTS} has gained acceptance\todo{add citation}. This geocode standard subdivides countries on three hierarchy levels, though each division happens in agreement with the respective member state, meaning that a level in one country may refer to a concept which is different from that in another. In Germany, the levels 1--3 refer to states, government regions and districts, respectively\todo{add citation}. For this application, \ac{NUTS} 3 will be used.
+
+Now, in order to lookup the population density on this level, the actual \acs{NUTS} 3 code will have to be determined for the given household. Recalling the fact that each household is associated with a \ac{GPS} position (comp.~\autoref{fig:data-api-erm-household-location}), an algorithm may calculate this code by mapping the position onto a map that draws in the individual subdivisions. In geospatial analysis\todo{add to glossary}, this is done using a polygon that represents the geographic bounds of a particular area. A common data format for storing such polygons and other spatial features, i.e. points and lines, is known as a \textit{shapefile}\todo{add citation}. For Germany, the \ac{BKG} maintains various such shapefiles for different kinds of subdivisions, including \acs{NUTS}~\footnote{\url{https://gdz.bkg.bund.de/index.php/default/digitale-geodaten.html}}. Once the code is known, a database, such as that provided by the Federal Statistical Office (German: \textit{Statistisches Bundesamt})~\footnote{\url{https://www.destatis.de/DE/Themen/Laender-Regionen/Regionales/Gemeindeverzeichnis/Administrativ/04-kreise.html}}, can be used to retrieve the population density.
+
+Continuing with \ref{itm:location-anonymization-step-generate-random-location}, the problem of generating a random location ($p$) that has a distance ($d$) from the household's location ($p_0$) which satisfies $d_{\text{min}} \leq d \leq d_{\text{max}}$ may be understood as illustrated in \autoref{fig:random-location-bounds}.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.55\textwidth]{resources/04_architecture/rejection-sampling}
+  \caption{Random location bounds for anonymization}
+  \label{fig:random-location-bounds}
+\end{figure}
+
+Here, the distance bounds $d_{\text{min}}$ and $d_{\text{max}}$ are used as the radii for circles drawn around a center $p_0$. Points generated within the green area should be accepted, whereas points in the red areas are either too close or too far away and thus, should be rejected. Again, this problem can be solved with two geographic polygons that represent the inner and outer circles. For the most precise result, each polygon would consist of 360 points. Now, to generate a random location $p$, an algorithm can take the square bounds ($x_{\text{min}}, x_{\text{max}}, y_{\text{min}}, y_{\text{max}}$) of the outer circle and generate two random coordinates ($x,y$). The resulting point is then checked against both circles as stated above. The process should be repeated until a valid point and thus, location, is found. This technique is known as \textit{rejection sampling}.
+
+
+\section{Component Mapping}
+\label{sec:component-mapping}
+
+
 \section{Deployment Model}
 \label{sec:deployment-model}
 
