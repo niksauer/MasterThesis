@@ -34,13 +34,13 @@ The edge of this system is composed by the set of measurement devices that are t
 \begin{description}[format={\storedescriptionlabel}]
   \item[Data Aggregator\label{itm:data-aggregator}]
   \hfill \\
-  The \ref{itm:data-aggregator} periodically (every \SI{15}{\minute}) makes measurements for each of the electricity or generation meters connected to this device. Each connection is established on the basis of a dedicated physical measurement probe. Measurements will only be taken if the participant associated with this measurement device has granted his consent. As soon as the participant revokes his consent, measurements will stop indefinitely (comp.~\autoref{sec:survey-consent}). For each measurement made, the \ref{itm:data-aggregator} will extract the set of data points that are of interest to the survey and store those, if not empty, as a new single entry in a database along with the measurement date and identifier of the meter from which it originated. The interaction model with the database can be classified as append-only.
+  The \ref{itm:data-aggregator} periodically (every 15 minutes) makes measurements for each of the electricity or generation meters connected to this device. Each connection is established on the basis of a dedicated physical measurement probe. Measurements will only be taken if the participant associated with this measurement device has granted his consent. As soon as the participant revokes his consent, measurements will stop indefinitely (comp.~\autoref{sec:survey-consent}). For each measurement made, the \ref{itm:data-aggregator} will extract the set of data points that are of interest to the survey and store those, if not empty, as a new single entry in a database along with the measurement date and identifier of the meter from which it originated. The interaction model with the database can be classified as append-only.
 
   \textbf{Realizes:} \ref{itm:survey-task-read-meters} on \autopageref{itm:survey-task-read-meters}
 
   \item[Data Transmitter\label{itm:data-transmitter}]
   \hfill \\
-  The \ref{itm:data-transmitter} periodically (every \SI{60}{\minute}, at minimum) transfers all of the measurements stored in the \ref{itm:data-aggregator}'s database to the cloud. Transfers are skipped if the participant associated with this measurement device has revoked or not yet granted his consent. Upon successful transfer, measurements will be deleted to avoid duplicate uploads in the future. Although this sharing of databases violates the database-per-service pattern (comp.~\autoref{sec:database-per-service-pattern}), it is still preferred due to the setup's simplicity. Otherwise, the \ref{itm:data-aggregator} would have to offer a network interface to retrieve and delete or modify measurements. This overhead is not warranted given the fact that the \ref{itm:data-aggregator} exclusively interacts with the database in an append-only mode.
+  The \ref{itm:data-transmitter} periodically (every 60 minutes, at minimum) transfers all of the measurements stored in the \ref{itm:data-aggregator}'s database to the cloud. Transfers are skipped if the participant associated with this measurement device has revoked or not yet granted his consent. Upon successful transfer, measurements will be deleted to avoid duplicate uploads in the future. Although this sharing of databases violates the database-per-service pattern (comp.~\autoref{sec:database-per-service-pattern}), it is still preferred due to the setup's simplicity. Otherwise, the \ref{itm:data-aggregator} would have to offer a network interface to retrieve and delete or modify measurements. This overhead is not warranted given the fact that the \ref{itm:data-aggregator} exclusively interacts with the database in an append-only mode.
 
   \textbf{Realizes:} \ref{itm:survey-task-transmit-measurements} on \autopageref{itm:survey-task-transmit-measurements}
 
@@ -113,29 +113,23 @@ Next, the answers to the location and metadata subjects of the registration form
 
 Here, the decision to model the relationship as foreign keys with a unique constraint on the \texttt{Metadata} and \texttt{Address} entities shall be noted. This will lead to a \texttt{0..1} cardinality, meaning that this data does not necessarily have to be supplied for an individual household, even if its presence will be enforced on the application layer\todo{explain intention}. The same result may be achieved through nullable foreign keys on the \texttt{Household} entity, although that approach would necessitate a primary key on the \texttt{Metadata} and \texttt{Address} entities which makes less sense conceptually since these details shall not exist on their own.
 
-Before the remaining registration details are modeled, two types of constants shall be introduced. These constants will be used to differentiate electricity and generation meters, as well as to specify the model number of a meter itself. The latter is needed because the steps to take measurements from a meter will likely vary across models.
+Before the remaining registration details are modeled, two types of constants shall be introduced with \autoref{tab:meter-type-model-number-constants}. These constants will be used to differentiate electricity and generation meters, as well as to specify the model number of a meter itself. The latter is needed because the steps to take measurements from a meter will likely vary across models.
 
-\begin{multicols}{2}
+\begin{table}[hbt]
+	\centering
+  	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Constant} & \textbf{Values} \\
+	    \hline
+	    \texttt{MeterType} & \texttt{ELECTRICITY}, \texttt{PV-GENERATION} \\
+		\texttt{MeterModelNumber} & \texttt{MT681}, \texttt{MT175}, \texttt{EHZ}, \texttt{DD3}, \texttt{EASY} \\
+	    	\hline
+	\end{tabularx}
+  	\caption{Meter type and model number constants}
+  	\label{tab:meter-type-model-number-constants}
+\end{table}
 
-\paragraph{\texttt{MeterType}}
-\begin{itemize}
-  \item \texttt{electricity}
-  \item \texttt{pv-generation}
-\end{itemize}
-
-\vfill\null
-\columnbreak
-
-\paragraph{\texttt{MeterModelNumber}}
-\begin{itemize}
-  \item \texttt{mt681}
-  \item \texttt{mt175}
-  \item \texttt{ehz}
-  \item \texttt{dd3}
-  \item \texttt{easy}
-\end{itemize}
-
-\end{multicols}
+\FloatBarrier
 
 Based on these constants, \autoref{fig:data-api-erm-household-meter-device-pv} models the relationship between a household's meters and \acsp{PVS}. It also associates each meter with a measurement device to indicate how these objects will be physically connected to each other later. As mentioned in the component design, this \texttt{MeasurementDevice} entity will need to track the device's version and date of last activity. Recalling the fact that microservices are deployed independently (comp.~\autoref{sec:microservice-definition}), the device's version will need to be split across multiple attributes, each tracking a different component running on the edge.
 
@@ -347,7 +341,7 @@ Although the component's overall control flow has already been discussed in \aut
 
 \FloatBarrier
 
-Unlocking a meter involves entering a \acs{PIN} code. This code will, in the most cases, have to be obtained from the household's energy supplier. The actual \acs{PIN} input may then happen physically in advance to this survey or programmatically at runtime through the meter's light-based interface (comp.~\autoref{sec:survey-overview}).
+Unlocking a meter involves entering a \acs{PIN} code. This code will, in the most cases, have to be obtained from the household's energy supplier. The actual \acs{PIN} input may then happen physically in advance to this survey or programmatically at runtime through the meter's optical interface (comp.~\autoref{sec:survey-overview}).
 
 
 \section{Component Realization}
@@ -374,7 +368,7 @@ For these tasks, an extensive amount of infrastructure, tools and expertise can 
 
 
 \paragraph{\ref{itm:device-frontend} Considerations}
-It shall be noted that \acl{JS} lacks \acsp{API} to comfortably interact with a browser's client certificate store. For instance, it is not possible to implement a logout functionality that clears the current session's certificate choice \cite[p.~8]{parsovs2013practical}. Such functionality, however, is required in client-side web applications, such as the \ref{itm:device-frontend}, which should be protected from unauthorized access. Moreover, using certificate-based authentication in such applications assumes that users have access to certificates. In this application context, however, certificates are only embedded in measurement devices. And since these measurement devices are headless (comp.~\autoref{sec:survey-overview}), participants will be required to use another, separate device to access the \ref{itm:device-frontend}. This problem can be solved be either:
+It shall be noted that \acl{JS} lacks \acsp{API} to comfortably interact with a browser's client certificate store. For instance, it is not possible to implement a logout functionality that clears the current session's certificate choice \cite[p.~8]{parsovs2013practical}. Such functionality, however, is required in client-side web applications, such as the \ref{itm:device-frontend}, which should be protected from unauthorized access. Moreover, using certificate-based authentication in such applications assumes that users have access to certificates. In this application context, however, certificates are only embedded in measurement devices. And since these measurement devices are headless (comp.~\autoref{sec:survey-overview}), participants will be required to use another, separate device to access the \ref{itm:device-frontend}. This problem can be solved by either:
 
 \begin{itemize}
   \item sharing the certificate with the participant so that he can add it to each of the devices used to access the frontend
