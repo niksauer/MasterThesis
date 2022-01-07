@@ -454,6 +454,26 @@ To hide this complexity and thus, streamline application code, the interaction (
 \section{Deployment Model}
 \label{sec:deployment-model}
 
+In light of the lengthy discussion on the benefits of containerized applications in \autoref{sec:docker} and \autoref{sec:shift-to-container-workloads}, it should come as no surprise that this system will fully embrace containers as the deployment target and medium of choice. This choice is also a major enabler to the system's portability since containers are not bound to a specific hardware platform. They only need to be compatible with the host's kernel and \acs{CPU} architecture (comp.~\autoref{sec:os-hardware-virtualization-comparison}). On the other hand, to simplify the management of these containers, the system will rely on a container orchestration platform as was presented in \autoref{sec:container-orchestration-platform}.
+
+
+\subsection{Target Hardware}
+\label{sec:deployment-target-hardware}
+
+A brief overview of the currently targeted hardware and thus, \acs{CPU} architectures, shall be given in the following~\footnote{The Linux kernel versions are disregarded because container runtimes, such as the one used by Docker, only require version 3.10 which is an almost 9 year old release that has reached its end of life in late 2017 \cite{dockerEngine} \cite{lkml2018eol}.}:
+
+\begin{description}
+  \item[Edge]
+  \hfill \\
+  Each measurement device shall be realized on the basis of a Raspberry Pi 4 Model B with \SI{4}{\giga\byte} of memory. This single-board computer is equipped with a 64-bit quad-core Cortex-A72 processor that is based on version 8 of the \acs{ARM} instruction set architecture (\texttt{armv8}) \cite{raspberrypi4} \cite{arm2020v8a}. In this price range, most devices run on \acs{ARM}\todo{add citation}. Therefore, this will be the primary target architecture going forward~\footnote{Usage of the \acs{ARM} architecture, generally, also leads to more power-efficient designs which is a valuable trait considering that measurement devices will run on a household's own electricity \cite[p.~8837]{morabito2017virtualization}.}.
+
+  \item[Cloud]
+  \hfill \\
+  The set of services representing the cloud shall be deployed using the university provided compute infrastructure. The exact configuration matters less in this case because, here, resources are provisioned on the basis of \acsp{VM} which, on request, may be reconfigured for more memory or \acs{CPU} cores. More importantly, all \acsp{VM} will run on the 64-bit version of the x86 instruction set architecture (\texttt{x86-64}). This architecture has, traditionally, always been used for server workloads which is why it will be the primary target going forward~\footnote{Amazon Web Services has only recently launched \acs{ARM}-based versions of its compute instance families. According to a Bloomberg report, Microsoft is also designing its own chips for use in its cloud computing offerings and consumer devices \cite{bloomberg2020microsoft}.}.
+\end{description}
+
+It shall be noted that the development of the components comprising this system will take place in an x86-based environment. Therefore, so-called multi-architecture builds will be necessary to enable local testing. Such functionality has recently been added to Docker \cite{docker2020multi}. Technically, this is achieved through emulation by a hypervisor~\footnote{While Docker ensures that a build is performed in the context of a specific \acs{CPU} architecture, it is up to the developer to ensure that libraries and application code are compatible with that particular architecture.}.
+
 
 \section{Maintenance and Support Plan}
 \label{sec:maintenance-and-support-plan}
