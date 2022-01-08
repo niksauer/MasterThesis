@@ -475,5 +475,11 @@ A brief overview of the currently targeted hardware and thus, \acs{CPU} architec
 It shall be noted that the development of the components comprising this system will take place in an x86-based environment. Therefore, so-called multi-architecture builds will be necessary to enable local testing. Such functionality has recently been added to Docker \cite{docker2020multi}. Technically, this is achieved through emulation by a hypervisor~\footnote{While Docker ensures that a build is performed in the context of a specific \acs{CPU} architecture, it is up to the developer to ensure that libraries and application code are compatible with that particular architecture.}.
 
 
+\subsection{Container Builds and Registry}
+\label{sec:deployment-container-builds-and-registry}
+
+As previously hinted at, this project will leverage Docker to build container images. Portability of build artifacts, again, is ensured by the fact that Docker builds \acs{OCI}-compliant images (comp.~\autoref{sec:docker}). Now, to use these images in an actual deployment, the build artifacts will have to be distributed to the execution hosts. In non air-gapped systems such as this one, a container image registry is typically used for this task. However, because the licensing model of this application has not yet been decided, a private registry, or rather repository, shall be used, i.e. one to which only a limited audience has access to. Finally, to make this process automatic and reproducible for any given revision of a component's code, a continuous delivery pipeline will be employed as is described in the \autoref{app:theoretical-framework} on \autopageref{sec:continuous-deployment}.
+
+
 \section{Maintenance and Support Plan}
 \label{sec:maintenance-and-support-plan}
