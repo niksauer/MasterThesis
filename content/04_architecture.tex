@@ -481,5 +481,26 @@ It shall be noted that the development of the components comprising this system 
 As previously hinted at, this project will leverage Docker to build container images. Portability of build artifacts, again, is ensured by the fact that Docker builds \acs{OCI}-compliant images (comp.~\autoref{sec:docker}). Now, to use these images in an actual deployment, the build artifacts will have to be distributed to the execution hosts. In non air-gapped systems such as this one, a container image registry is typically used for this task. However, because the licensing model of this application has not yet been decided, a private registry, or rather repository, shall be used, i.e. one to which only a limited audience has access to. Finally, to make this process automatic and reproducible for any given revision of a component's code, a continuous delivery pipeline will be employed as is described in the \autoref{app:theoretical-framework} on \autopageref{sec:continuous-deployment}.
 
 
-\section{Maintenance and Support Plan}
-\label{sec:maintenance-and-support-plan}
+\subsection{Container Orchestrator}
+\label{sec:deployment-container-orchestrator}
+
+To manage and deploy aforementioned containers, this project will rely on Kubernetes~\footnote{\url{https://kubernetes.io/}}, a state-of-the-art container orchestration platform that exhibits and goes well beyond the minimum set of characteristics pressed for in \autoref{sec:container-orchestration-platform-capabilities}. Originally developed at Google, Kubernetes builds upon more than a decade and a half of experience running containerized production workloads at scale \cite[p.~50]{burns2016borg}. It is also the primary solution recommended and hosted by the \ac{CNCF} \cite[p.~13]{pahl2017cloud}.
+
+
+\paragraph{Resource Considerations}
+
+Even though the currently targeted edge client hardware is powerful in comparison to its size, care should be taken in the choice of container orchestrator. Optimizing this choice for resource usage will allow less well equipped hardware to be used in the future. Moreover, whereas an orchestrator running in the cloud typically attempts to maximize resource utilization, single-node edge orchestrators will not have to move and migrate containers as frequently and thus, can be built to use minimal resources \cite[p.~2]{goethals2019fledge}. For this purpose, lightweight distributions of Kubernetes have emerged which promise savings by modifying and reorganizing some of the core components \cite[pp.~65--66]{bohm2021profiling}. Based on the findings in \cite{bohm2021profiling} and \cite{goethals2019fledge}, this project will use the K3s distribution of Kubernetes to manage and deploy containers on the edge~\footnote{\url{https://k3s.io/}}.
+
+
+%\section{Maintenance and Support Plan}
+%\label{sec:maintenance-and-support-plan}
+%
+%\subsection{Automatic Updates}
+%
+%\subsection{Remote Access}
+%
+%\subsection{Monitoring}
+%
+%\subsubsection{Hardware Incidents}
+%
+%\subsubsection{Error Logging}
