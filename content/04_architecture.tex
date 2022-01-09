@@ -524,6 +524,24 @@ Two additional advantages of this approach shall be noted. Firstly, the workflow
 
 \subsection{Remote Access}
 
+For debugging purposes and other maintenance activities, it will be necessary to remotely connect to measurement devices via \acs{SSH}. However, because these devices will be situated on a network whose firewall only allows outbound connections, i.e. the household's \acs{LAN}, direct access (\textit{forward connection}) will not be possible. Besides, it is unlikely that the household will have a publicly reachable \acs{IP} address~\footnote{\acsp{ISP} use \ac{NAT} to route traffic from the internet to their customers who are assigned private \acs{IP} addresses. The reason being that only a fixed amount of \acs{IP}v4 addresses exist ($2^{32}$ \acsp{IP}). \acs{IP}v6 may change this situation with its 128-bit address space ($2^{128}$ \acsp{IP}).}. Such (static) public \acsp{IP} are usually reserved for commercial internet plans. Instead, a \textit{reverse connection} approach will be used as is shown in \autoref{fig:remote-ssh-tunnel}.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.85\textwidth]{resources/04_architecture/reverse-ssh-tunnel}
+  \caption{Reverse \acs{SSH} tunnel to allow remote access}
+  \label{fig:remote-ssh-tunnel}
+\end{figure}
+
+\FloatBarrier
+
+Here, each measurement device will establish a long-lived \acs{TCP}/\acs{IP} connection (\textit{tunnel}) with one of the system's cloud servers which are situated on the public internet and to which administrators will have access to. Once an administrator connects to that particular cloud server, he will be able to start a regular \acs{SSH} session with the remote measurement device by specifying the port of the previously opened tunnel in his connection request (\textit{reverse \acs{SSH} tunneling}).
+
+Obviously, a measurement device will have to ensure that its tunnel remains active over the course of the study. On the other hand, each measurement device needs to connect to the cloud server using a different port number. Such automatic retry and port negotiation functionality is commonly found in open-source solutions~\footnote{\url{https://github.com/fatedier/frp}}.
+
+\textbf{Realizes:} \ref{itm:fr-connect-to-device}
+
+
 \subsection{Monitoring}
 
 \subsubsection{Hardware Incidents}
