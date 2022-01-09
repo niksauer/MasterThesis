@@ -492,15 +492,9 @@ To manage and deploy aforementioned containers, this project will rely on Kubern
 Even though the currently targeted edge client hardware is powerful in comparison to its size, care should be taken in the choice of container orchestrator. Optimizing this choice for resource usage will allow less well equipped hardware to be used in the future. Moreover, whereas an orchestrator running in the cloud typically attempts to maximize resource utilization, single-node edge orchestrators will not have to move and migrate containers as frequently and thus, can be built to use minimal resources \cite[p.~2]{goethals2019fledge}. For this purpose, lightweight distributions of Kubernetes have emerged which promise savings by modifying and reorganizing some of the core components \cite[pp.~65--66]{bohm2021profiling}. Based on the findings in \cite{bohm2021profiling} and \cite{goethals2019fledge}, this project will use the K3s distribution of Kubernetes to manage and deploy containers on the edge~\footnote{\url{https://k3s.io/}}.
 
 
-%\section{Maintenance and Support Plan}
-%\label{sec:maintenance-and-support-plan}
-%
-%\subsection{Automatic Updates}
-%
-%\subsection{Remote Access}
-%
-%\subsection{Monitoring}
-%
-%\subsubsection{Hardware Incidents}
-%
-%\subsubsection{Error Logging}
+\section{Maintenance and Support Plan}
+\label{sec:maintenance-and-support-plan}
+
+A major objective of this thesis is the design of a maintenance and support plan through which the system can be effortlessly operated, upgraded and serviced over the course of the data collection survey (comp.~\autoref{sec:goals-and-scope}). This is especially important considering that measurement devices will be located in various geographic regions, making physical access to these devices impossible or impractical at the very least. More so, it cannot be expected that the participants of the survey will have enough technical knowledge to aid in support beyond rebooting a particular device. Therefore, this section will discuss three approaches relevant to this stage of the application lifecycle.
+
+
