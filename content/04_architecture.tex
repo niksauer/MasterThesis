@@ -543,7 +543,69 @@ Obviously, a measurement device will have to ensure that its tunnel remains acti
 
 
 \subsection{Monitoring}
+\label{sec:monitoring}
 
-\subsubsection{Hardware Incidents}
+Although the solutions presented in the previous sections will enable administrators to upgrade and service individual measurement devices, no method has been laid out by which potential defects can be recognized proactively. This is important as participants will likely not monitor their devices for failure, hereby incurring a chance of missed measurements. This section concludes the system's design by outlining two more solutions that address these concerns.
+
+
+\subsubsection{Meter Incidents}
+\label{sec:meter-incidents}
+
+It is clear that the system's effectiveness depends on the cyber-physical interaction with a meter described in \autoref{sec:meter-interaction}. Yet, because this interaction happens on the basis of an optical interface, it cannot be guaranteed that the communication is stable at all times. For instance, small alterations in the alignment of transmitters and receivers may cause interruptions. On the other hand, the physical connection of the reading head, i.e. the measurement probe, with the measurement device may become faulty or unresponsive. Lastly, recalling the fact that the timing details to navigate a meter's menu vary from model to model and sometimes, even for the same model, it might not be possible to enable the detailed data readout of a meter. In all of these cases, administrators shall be made aware of the situation so that they can proactively connect to a particular measurement device and attempt to resolve the issue (\textit{incident})~\footnote{Given the geographic distance, participants may also be asked to re-align the measurement probe or unplug the measurement device from its power source.}. For this reason, \autoref{tab:data-api-endpoints-incidents} lists three additional endpoints of the \ref{itm:data-api} that will be used by the \ref{itm:data-aggregator} to track these incidents on a per-meter basis. To distinguish between the different types of incidents, \autoref{tab:meter-incident-type-constant} introduces another constant.
+
+\begin{table}[hbt]
+	\centering
+  	\begin{tabularx}{\textwidth}{|c|c|X|}
+		\hline
+		\textbf{\#} & \textbf{Method} & \textbf{Path} \\
+	    \hline
+	    \labeltext[Endpoint~11]{11}{itm:data-endpoint-11} & \texttt{GET} & \texttt{/household/meter/:uuid/incident} \\
+	   	\labeltext[Endpoint~12]{12}{itm:data-endpoint-12} & \texttt{POST} & \texttt{/household/meter/:uuid/incident/report} \\
+	    \labeltext[Endpoint~13]{13}{itm:data-endpoint-13} & \texttt{POST} & \texttt{/household/meter/:uuid/incident/resolve} \\
+	    	\hline
+	\end{tabularx}
+  	\caption{Data \acs{API} endpoints to track meter incidents}
+  	\label{tab:data-api-endpoints-incidents}
+\end{table}
+
+\FloatBarrier
+
+\begin{table}[hbt]
+	\centering
+  	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Constant} & \textbf{Values} \\
+	    \hline
+	    \texttt{MeterIncidentType} & \texttt{SERIAL-PORT-UNAVAILABLE} \newline \texttt{OBIS-CODES-UNAVAILABLE} \\
+	    	\hline
+	\end{tabularx}
+  	\caption{Meter incident constants}
+  	\label{tab:meter-incident-type-constant}
+\end{table}
+
+\FloatBarrier
+
+The control flow of this monitoring measure is rather simple. Upon initialization, the \ref{itm:data-aggregator} will fetch the list of incidents previously reported for each of the meters connected to the device. If that specific type of incident has already been reported or resolved, respectively, the \ref{itm:data-api} will take no action. If, however, a previously resolved incident is reported again, the case will be re-opened. This effectively means that there will be no history of incidents, although that can be easily changed by simply appending to the list of incidents instead of modifying existing instances.
+
+\autoref{fig:data-api-erm-meter-incident} showcases how incidents will be modeled on sides of the \ref{itm:data-api}.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=0.9\textwidth]{resources/04_architecture/data-api-erm-7}
+  \caption{Modeling of a meter's incidents}
+  \label{fig:data-api-erm-meter-incident}
+\end{figure}
+
+\FloatBarrier
+
 
 \subsubsection{Error Logging}
+\label{sec:error-logging}
+
+As a best practice in any application, this project will leverage a third-party error tracking software that remotely collects errors~\footnote{\url{https://rollbar.com/}}, including their stack traces, so that production code can be continuously monitored and improved. This solution will be integrated into each of the system's custom built components, regardless of whether they run on the edge or cloud. To name a few practical benefits, such error tracking platforms will allow developers and administrators to:
+
+\begin{itemize}
+  \item receive alerts on new errors in real-time
+  \item automatically group similar errors
+  \item correlate errors with a component's version and other user metadata
+\end{itemize}
