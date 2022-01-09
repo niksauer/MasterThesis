@@ -498,3 +498,34 @@ Even though the currently targeted edge client hardware is powerful in compariso
 A major objective of this thesis is the design of a maintenance and support plan through which the system can be effortlessly operated, upgraded and serviced over the course of the data collection survey (comp.~\autoref{sec:goals-and-scope}). This is especially important considering that measurement devices will be located in various geographic regions, making physical access to these devices impossible or impractical at the very least. More so, it cannot be expected that the participants of the survey will have enough technical knowledge to aid in support beyond rebooting a particular device. Therefore, this section will discuss three approaches relevant to this stage of the application lifecycle.
 
 
+\subsection{Remote Updates}
+
+While it is easy to see how the initial setup of a measurement device and deployment of the services running on it may happen on the basis of a custom system image, it is less clear how these components will be updated once the device has been installed in a household. For this, a high-level understanding of a deployment in Kubernetes is needed.
+
+At the heart, Kubernetes works in a declarative manner, meaning that users describe a desired cluster state based on which control loops then watch the cluster and make or request changes that move the current state closer to this desired state (comp.~\acs{MAPE-K} cycle in \autoref{sec:orchestration-reference-architecture}) \cite{kubernetesControllers}. For instance, so-called replication controllers will monitor a service's replica count and attempt to create or destroy additional instances if the actual count does not match the user-provided specification. Now, given the fact that Kubernetes uses configuration files to formulate such a desired cluster state~\footnote{Kubernetes also allows for the possibility to use imperative commands for managing a cluster. However, because these commands effectively only alter the previous desired state, i.e. that specified through the series of commands executed prior, this method is not listed explicitly~\cite{kubernetesImperative}.}, a workflow can be designed that allows components to be updated remotely without requiring a participant's input. Of course, this workflow may also be used to update the cloud's components.
+
+In this workflow, a \acs{VCS} repository will contain the complete set of configuration files needed to describe a particular revision of the system's deployment. Then, a so-called operator, i.e. an extension to Kubernetes, will continuously monitor the repository for changes and instruct the orchestrator to use the most recent revision as the cluster's desired state~\footnote{\url{https://fluxcd.io/}}.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=\textwidth]{resources/04_architecture/gitops-workflow}
+  \caption{Workflow to achieve remote component updates}
+  \label{fig:gitops-workflow}
+\end{figure}
+
+\FloatBarrier
+
+This workflow inherently decouples the update process from the execution hardware, allowing individual devices to fail intermittently but then self-heal by applying the latest configuration revision. Decoupling these steps also helps in scaling the system since administrators will not have to interact with each individual measurement device in order to perform an update.
+
+Two additional advantages of this approach shall be noted. Firstly, the workflow prepares for the possibility to practice \acl{CD} (see~\autoref{app:theoretical-framework} on \autopageref{sec:continuous-deployment}). This practice can be easily attained by extending the pipeline mentioned in \autoref{sec:deployment-container-builds-and-registry} to update the cluster configuration files whenever a new container image is built. Secondly, by storing the cluster's configuration in a \acs{VCS} repository, users outside of the operations team can be empowered to do their own operations, lowering the bar for self-service systems~\footnote{The article in \cite{limoncelli2018gitops} goes into great detail on the benefits of this \acs{VCS}-driven workflow and culture, known as GitOps.} \cite[p.~38]{limoncelli2018gitops}.
+
+\textbf{Realizes:} \ref{itm:fr-update-device}
+
+
+\subsection{Remote Access}
+
+\subsection{Monitoring}
+
+\subsubsection{Hardware Incidents}
+
+\subsubsection{Error Logging}
