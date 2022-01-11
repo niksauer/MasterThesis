@@ -46,13 +46,13 @@ Derived from several other pre-existing architectures \cite[p.~76]{fielding2000a
 	The principle of separation of concerns allows components to evolve independently. By splitting the user interface engine concerns (\textit{client}) from data storage concerns (\textit{server}), portability and scalability improve \cite[p.~78]{fielding2000architectural}.
 	\item[Stateless]
 	\hfill \\
-	Each interaction (\textit{request}) between client and server must contain enough information to be processed in isolation (\textit{self-descriptiveness}) \cite[pp.~78--79]{fielding2000architectural}. In turn, this enables parallel processing and allows intermediaries (\textit{proxy}) to view and understand a request without accessing server context (\textit{session state}). Server-side scalability also improves as no resources have to be dedicated to store state in-between requests \cite[pp.~79, 93]{fielding2000architectural}. By nature, this has the design trade-off of increasing repetitive-data and thus decreasing network performance.
+	Each interaction (\textit{request}) between client and server must contain enough information to be processed in isolation (\textit{self-descriptiveness}) \cite[pp.~78--79]{fielding2000architectural}. In turn, this enables parallel processing and allows intermediaries (\textit{proxy}) to view and understand a request without accessing server context (\textit{session state}). Server-side scalability also improves as no resources have to be dedicated to storing state in-between requests \cite[pp.~79, 93]{fielding2000architectural}. By nature, this has the design trade-off of increasing repetitive-data and thus, decreasing network performance.
 	\item[Cache]
 	\hfill \\
 	Data returned by a server (\textit{response}) may be implicitly or explicitly labeled as cacheable or non-cacheable. In some cases, the cache may entirely eliminate interactions, again improving efficiency, scalability, and user-perceived performance, though caution must be taken since reliability issues may arise through stale data \cite[pp.~79--80]{fielding2000architectural}.
 	\item[Uniform Interface]
 	\hfill \\
-	While a standardized component interaction interface simplifies the overall system architecture, it disregards the efficiency improvements that can be gained from an application-level decision of such \cite[pp.~81--82]{fielding2000architectural}. The exact communication constraints are discussed in \autoref{sec:rest-component-interaction}.
+	While a standardized component interaction interface simplifies the overall system architecture, it disregards the efficiency improvements that can be gained from an application-level decision of such \cite[pp.~81--82]{fielding2000architectural}. The exact communication constraints are discussed in the next section.
 \end{description}
 
 
@@ -70,7 +70,7 @@ The key abstraction in \ac{REST} is a \textit{resource} which refers to any kind
 
 A resource's value may be static or variable (document vs. current weather), though in any case the semantics, i.e. what distinguishes one resource from another, must remain the same \cite[p.~89]{fielding2000architectural}.
 
-From here on, \citeauthor{fielding2000architectural} explain that \ac{REST} components perform actions on a resource by exchanging stateless messages composed of \cite[pp.~90--91]{fielding2000architectural}:
+From here on, \citeauthor{fielding2000architectural} explains that \ac{REST} components perform actions on a resource by exchanging stateless messages composed of \cite[pp.~90--91]{fielding2000architectural}:
 
 \begin{description}[format={\storedescriptionlabel}]
 	\item[Resource Identifier]
@@ -90,7 +90,7 @@ From here on, \citeauthor{fielding2000architectural} explain that \ac{REST} comp
 	Defines the message's purpose such as the action requested or meaning of the response. Can also be used to parameterize requests or override default behavior.
 \end{description}
 
-It shall be noted that a message originating from a client component may include different fields than that delivered by a server component in response \cite[pp.~93--94]{fielding2000architectural}. This discrepancy is displayed in \autoref{tab:rest-message-fields}.
+It shall be noted that a message originating from a client component may include fields different from those delivered by a server component in response \cite[pp.~93--94]{fielding2000architectural}. This discrepancy is displayed in \autoref{tab:rest-message-fields}.
 
 \begin{table}[hbt]
 	\centering
@@ -106,7 +106,7 @@ It shall be noted that a message originating from a client component may include
   	\label{tab:rest-message-fields}
 \end{table}
 
-The final constraint to component interaction is a concept called \ac{HATEOAS} \cite[p.~82]{fielding2000architectural}. Even though \citeauthor{fielding2000architectural}'s dissertation did not fully elaborate on this aspect, he re-emphasized its importance in the coming years and would not accept an \acs{API}'s \textit{\ac{REST}ful} labelling if absent \cite{fielding2008hypertext}. In essence, an application's control state must be included in the resource representation returned by a server \cite[p.~102]{fielding2000architectural}, thereby explicitly stating the actions a client may perform on that resource at that specific point in time. Of course, the list of permitted actions could change in response to any previous one taken.
+The final constraint to component interaction is a concept called \ac{HATEOAS} \cite[p.~82]{fielding2000architectural}. Even though \citeauthor{fielding2000architectural}'s dissertation did not fully elaborate on this aspect, he re-emphasized its importance in the coming years and would not accept an \acs{API}'s \textit{\ac{REST}ful} labelling if absent \cite{fielding2008hypertext}. In essence, an application's control state must be included in the resource representation returned by a server \cite[p.~102]{fielding2000architectural}, thereby explicitly stating the actions a client may perform on that resource at that specific point in time. Of course, the list of permitted actions could change in response to any actions that were taken previously.
 
 
 \section{Continuous Integration and Deployment}
@@ -118,20 +118,20 @@ Agile software development welcomes changing requirements, even late in the deve
 \subsection{\acl{CI}}
 \label{sec:continuous-integration}
 
-\citeauthor{fowler2006continuous}, a well known software developer, public speaker and co-author of the \citetitle{beck2001manifesto}, defines \ac{CI} as a software development practice where members of a team integrate their work frequently, and at least daily. Each such integration (\textit{build}) should be verified by an automated compile and test suite. Only if all of these steps (\textit{pipeline}) succeed, can the overall build considered to be good. The goal being that integration errors are detected as quickly as possible \cite[pp.~1,~3]{fowler2006continuous}. Early detection allows developers to \cite[pp.~7,~11--12]{fowler2006continuous}:
+\citeauthor{fowler2006continuous}, a well-known software developer, public speaker and co-author of the \citetitle{beck2001manifesto}, defines \ac{CI} as a software development practice where members of a team integrate their work frequently, and at least daily. Each such integration (\textit{build}) should be verified by an automated compile and test suite. Only if all of these steps (\textit{pipeline}) succeed, can the overall build considered to be good, with the goal being that integration errors are detected as quickly as possible \cite[pp.~1,~3]{fowler2006continuous}. Early detection allows developers to \cite[pp.~7,~11--12]{fowler2006continuous}:
 
 \begin{itemize}
   \item build off a shared stable base~\footnote{\citeauthor{meyer2014continuous} draws a comparison to Toyota's factory floor. Here, every worker can halt the production line if something breaks or holds them up. Failed integrations should echo a similar behavior and encourage developers to resolve issues promptly as a favor to others \cite[p.~15]{meyer2014continuous}.}
   \item predict how long the integration will take
   \item resolve issues more easily since the changes are recent and few
-  \item prevent cumulative failures (where one bug shows as the result of another)
+  \item prevent cumulative failures (where one bug appears as the result of another)
 \end{itemize}
 
-However, the degree of these benefits is directly tied to the depth of the test suite and similarity between the environment in which the results were generated and that where the software will ultimately be deployed to. Every difference introduces a chance that what happens under a test will not happen in production \cite[pp.~9,~12]{fowler2006continuous}.
+However, the degree of these benefits is directly tied to the depth of the test suite and the degree of similarity between the environment in which the results were generated and the one to which the software will ultimately be deployed. Every difference introduces the chance that what happens during a test will not happen in production \cite[pp.~9,~12]{fowler2006continuous}.
 
 Although \ac{CI} requires no particular tooling, many organizations leverage a so-called \ac{CI} server to monitor code repositories for changes. With each commit, the server will checkout the source code, initiate a build and publicly display the integration status. It is exactly this automatism that differentiates \ac{CI} from traditional builds which are performed on a timed schedule. The latter will, by definition, always delay detection of errors \cite[pp.~7,~10]{fowler2006continuous}.
 
-Lastly, \citeauthor{fowler2006continuous} emphasizes that build pipelines must balance the breadth of bug finding techniques (e.g. static code analysis) with the need for speed, i.e. how long it will take to run a build~\footnote{\ac{CI} originated as one of the twelve original practices of \ac{XP}. Another practice of \ac{XP} advocates for keeping build times under ten minutes \cite[pp.~2,~8]{fowler2006continuous}.}\todo{add citation}. More in-depth tests may, for example, be moved to a secondary test suite that is not run on every commit. Builds could also be configured to only run against modified components \cite[pp.~5,~8]{fowler2006continuous}.
+Lastly, \citeauthor{fowler2006continuous} emphasizes that build pipelines must balance the breadth of bug finding techniques (e.g. static code analysis) with the need for speed, i.e. how long it will take to run a build~\footnote{\ac{CI} originated as one of the twelve original practices of \ac{XP}. Another practice of \ac{XP} advocates keeping build times under ten minutes \cite[pp.~2,~8]{fowler2006continuous}.}\todo{add citation}. More in-depth tests may, for example, be moved to a secondary test suite that is not run on every commit. Builds could also be configured to only run against modified components \cite[pp.~5,~8]{fowler2006continuous}.
 
 
 \subsection{\acl{CD}}
@@ -146,7 +146,7 @@ Whereas \ac{CI} purely focuses on the integration of changes, \ac{CD} extends th
   \item prevents a disconnect between the development and operations teams
 \end{itemize}
 
-Admittedly, most organizations will, however, settle on a less continuous process for reasons such as industry regulations (e.g. automotive software), distribution channels (e.g. review process of application store) or pure customer preference \cite[pp.~68--69]{leppanen2015highways}. As an example, web-based applications will be more suitable for \ac{CD} than off-the-shelve software because updates can happen largely transparent to the user~\footnote{Hewlett-Packard (HP) even practices \ac{CD} with its printer firmware. The author of this thesis was formerly employed at HP and remembers this fact being shared as if it were a secret family recipe.} \cite[p.~22]{savor2016continuous}. In such situations where immediate deployments are not exercised but a company is still ready to reliably release its software on demand, literature refers to the same acronym as Continuous Delivery \cite[p.~50]{chen2015continuous}.
+Admittedly, most organizations will, however, settle on a less continuous process for reasons such as industry regulations (e.g. automotive software), distribution channels (e.g. review process of application store) or pure customer preference \cite[pp.~68--69]{leppanen2015highways}. As an example, web-based applications will be more suitable for \ac{CD} than off-the-shelve software because updates can happen in a largely transparent manner to the user~\footnote{Hewlett-Packard (HP) even practices \ac{CD} with its printer firmware. The author of this thesis was formerly employed at HP and remembers this fact being shared as if it were a secret family recipe.} \cite[p.~22]{savor2016continuous}. In such situations where immediate deployments are not exercised but a company is still ready to reliably release its software on demand, literature refers to the same acronym as Continuous Delivery \cite[p.~50]{chen2015continuous}.
 
 Irrespective of the level practiced, the pipelines used for these purposes (comp.~\autoref{sec:continuous-integration}) will likely be extended with more tests (e.g. system and performance), as well as methods to roll back releases on failures \cite[pp.~52--53]{chen2015continuous}. \ac{CD} can of course also be combined with advanced deployment strategies such as using a secondary environment for beta testing (\textit{staging}), switching traffic between two identical environments as testing completes (\textit{blue / green}) or releasing changes off peak or out of user reach to test scalability and performance (\textit{dark launch}) \cite[p.~23]{savor2016continuous}.
 

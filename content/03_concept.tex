@@ -19,24 +19,22 @@ The research group around the \ac{EBP} has called upon households to participate
 
 Fundamentally, the task of creating such a data set boils down to:
 
-%\label{itm:survey-task-read-meters}
-
 \begin{enumerate}[label=(\Alph*)]
   \item \labeltext[Subtask~(A)]{reading multiple electricity and generation meters~\footnote{This survey is particularly interested in meters which utilize the \acs{SML} communication protocol to expose their internal measurement data via the optical interface standardized in \acs{IEC} 62056-21, colloquially known as D0.}}{itm:survey-task-read-meters}
   \item \labeltext[Subtask~(B)]{transmitting the observed data to a centralized data store}{itm:survey-task-transmit-measurements}
 \end{enumerate}
 
-In order to do this in a fully automated manner, the survey will require an end-to-end software based solution. Having said that, such a solution will, however, still need to bridge between the physical world with its meters and the digital world where the observed data (\textit{measurements}) shall be stored and processed. For this purpose, the solution may rely on an optocoupler (\textit{measurement probe}) that is capable of converting the light signal (\textit{meter interface}) of an electricity or generation meter into a serial bitstream~\footnote{Such a measurement probe is currently being developed and soldered by the supervisor of this thesis, Johannes Kaeppel.}. Reversely, such an optocoupler may also be used to send light signals to the meter, allowing programmatic control of its menu.
+In order to do this in a fully-automated manner, the survey will require an end-to-end software-based solution. Having said that, such a solution will, however, still need to bridge between the physical world with its meters and the digital world where the observed data (\textit{measurements}) shall be stored and processed. For this purpose, the solution may rely on an optocoupler (\textit{measurement probe}) that is capable of converting the light signal (\textit{meter interface}) of an electricity or generation meter into a serial bitstream~\footnote{Such a measurement probe is currently being developed and soldered by the supervisor of this thesis, Johannes Kaeppel.}. Reversely, such an optocoupler may also be used to send light signals to the meter, allowing programmatic control of its menu.
 
-With respect to \ref{itm:survey-task-read-meters}, the survey intends to install one or multiple headless compute devices (\textit{measurement devices}) in each participating household. These devices will be equipped with one or multiple measurement probes. The number of measurement devices and probes will vary depending on the number of meters to be read out and whether they are physically separated from each other, i.e. whether one measurement device can be practically connected to multiple meters. Further, the survey is targeting a 15 minute interval in which measurements shall be made (\textit{measurement cycle}).
+With respect to \ref{itm:survey-task-read-meters}, the survey intends to install one or more headless compute devices (\textit{measurement devices}) in each participating household. These devices will be equipped with one or more measurement probes. The number of measurement devices and probes will vary depending on the number of meters to be read and whether they are physically separated from each other, i.e. whether one measurement device can be practically connected to multiple meters. Further, the survey is targeting a 15-minute interval in which measurements shall be made (\textit{measurement cycle}).
 
-\ref{itm:survey-task-transmit-measurements} can be explained by the fact that the research group would like to analyze measurements as early as possible. More so, they see the potential to expand this survey with the ability to give households a preview of the transactions and revenue or savings that could be achieved if the household were to be actively participating in the \ac{EBP} (comp.~\cite{stoy2019broker}\todo{add page number}). This rules out any solutions in which the measurements are stored on device and only processed when the survey ends and thus, devices have been returned. Instead, measurements shall be transferred to a centralized data store on an hourly schedule, at minimum (\textit{report cycle}).
+\ref{itm:survey-task-transmit-measurements} can be explained by the fact that the research group would like to analyze measurements as early as possible. More so, they see the potential to expand this survey with the ability to give households a preview of the transactions and revenue or savings that could be achieved if the household were to actively participate in the \ac{EBP} (comp.~\cite{stoy2019broker}\todo{add page number}). This rules out any solutions in which the measurements are stored on device and only processed when the survey ends, i.e. after the devices have been returned. Instead, measurements shall be transferred to a centralized data store on an hourly schedule, at minimum (\textit{report cycle}).
 
 
 \subsection{Registration}
 \label{sec:survey-registration}
 
-Even though the survey hopes to cover a diverse set of households, it currently does not intend for the public to sign up for participation at free will. Instead, the survey will follow an invite-only model. Regardless of the criteria based on which households are selected (comp.~\autoref{sec:goals-and-scope}), participants will have to fill out a registration form that covers the following subjects:
+Even though the survey hopes to cover a diverse set of households, it currently does not intend for the public to sign up for participation at free will. Instead, the survey will follow an invite-only model. Regardless of the criteria based on which households are selected (comp.~\autoref{sec:goals-and-scope}), participants will have to fill out a registration form that poses the following questions:
 
 \paragraph{Contact details}
 \begin{itemize}
@@ -70,7 +68,7 @@ Even though the survey hopes to cover a diverse set of households, it currently 
 \begin{itemize}
   \item What is the model number of each of your electricity meters?
   \item What is the model number of each of your generation meters?
-  \item Which of your \acsp{PVS} is connected to which of your generation meters?
+  \item Which of your \acsp{PVS} is connected to which of your generation meters?\todo{implicit}
 \end{itemize}
 
 The answers to this questionnaire (\textit{registration details}) shall be stored alongside the measurements  collected for that particular household. This allows the research group to, for example, correlate measurements with the geographic location of that household and thus, the weather conditions at the time of measurement.
@@ -79,10 +77,10 @@ The answers to this questionnaire (\textit{registration details}) shall be store
 \subsection{Consent}
 \label{sec:survey-consent}
 
-Given the involvement of third parties, data capture, transmission and storage must be in compliance with local data protection laws (e.g. \acs{GDPR} in Europe). Through consultation with a legal professional, the research group has determined that the solution shall track the participation status (\textit{consent}) for each of the survey's subjects and couple that to the lifecycle of each measurement device, as well as the data processing capabilities of the research group itself. Three states of participation shall be distinguished for any given household:
+Given the involvement of third parties, data capture, transmission and storage must be in compliance with local data protection laws (e.g. \acs{GDPR} in Europe). Through consultation with a legal professional, the research group has determined that the solution shall track the participation status (\textit{consent}) of each of the survey's subjects and couple that to the lifecycle of each measurement device, as well as to the data processing capabilities of the research group itself. Three states of participation shall be distinguished for any given household:
 
 \begin{description}
-  \item[Consent not granted]
+  \item[Consent not yet granted]
   \hfill \\
   The household has been signed up for participation in the data collection survey. It may have already received and connected one or multiple measurement devices. None of these devices shall make any measurements.
 
@@ -101,7 +99,7 @@ From these descriptions it is clear that the acts of granting and revoking a con
 \subsection{Anonymization}
 \label{sec:survey-anonymization}
 
-The \acs{GDPR} stipulates that personally identifiable data must be removed on user request\todo{add citation}. Yet, to ensure that the collected measurements remain of value even after a participant has revoked his consent, the research group has come up with a concept to anonymize the registration details (comp.~\autoref{sec:survey-registration}), allowing continued processing and limited geographic correlation. This concept, again, has been established on the basis of legal advice sought after. It plans to:
+The \acs{GDPR} stipulates that personally identifiable data must be removed upon user request\todo{add citation}. Yet, to ensure that the collected measurements remain of value even after a participant has revoked his consent, the research group has come up with a concept to anonymize the registration details (comp.~\autoref{sec:survey-registration}), allowing continued processing and limited geographic correlation. This concept, again, has been established on the basis of acquired legal advice. It plans to:
 
 \begin{enumerate}[label=(\Alph*)]
   \item \labeltext[Measure~(A)]{remove the contact details}{itm:anonymization-step-remove-contact}
@@ -109,7 +107,7 @@ The \acs{GDPR} stipulates that personally identifiable data must be removed on u
   \item \labeltext[Measure~(C)]{anonymize the \aclp{PVS}}{itm:anonymization-step-anonymize-pvs}
 \end{enumerate}
 
-Obviously, \ref{itm:anonymization-step-remove-contact} is the most straightforward to obscuring a participant's identity. Unfortunately, the same technique cannot be applied to the location because measurements will almost, in all cases, have to be evaluated in the context of their geographic location (\textit{geospatial analysis}). Therefore, \ref{itm:anonymization-step-anonymize-location} is required. Similarly, \ref{itm:anonymization-step-anonymize-pvs} is necessary because the specifications of a \acs{PVS} could be matched against a public registry (e.g.~\acs{MaStR} in Germany~\footnote{The \ac{MaStR} contains the master data of all electricity and gas generating plants in Germany. It also tracks actors such as the plant operators or energy suppliers. Many of its contents are publicly viewable at \url{https://www.marktstammdatenregister.de}}). The following descriptions shall further explain \ref{itm:anonymization-step-anonymize-location} and \ref{itm:anonymization-step-anonymize-pvs}, respectively:
+Obviously, \ref{itm:anonymization-step-remove-contact} is the most straightforward approach to obscuring a participant's identity. Unfortunately, the same technique cannot be applied to the location because measurements will almost, in all cases, have to be evaluated in the context of their geographic location (\textit{geospatial analysis}). Therefore, \ref{itm:anonymization-step-anonymize-location} is required. Similarly, \ref{itm:anonymization-step-anonymize-pvs} is necessary because the specifications of a \acs{PVS} could be matched against a public registry (e.g.~\acs{MaStR} in Germany~\footnote{The \ac{MaStR} contains the master data of all electricity and gas generating plants in Germany. It also tracks actors such as the plant operators or energy suppliers. Many of its contents are publicly viewable at \url{https://www.marktstammdatenregister.de}}). The following descriptions shall further explain \ref{itm:anonymization-step-anonymize-location} and \ref{itm:anonymization-step-anonymize-pvs}, respectively:
 
 \begin{description}
   \item[Anonymization of location]
@@ -137,8 +135,8 @@ In accordance to \autoref{sec:data-collection-survey}, the following functional 
 
 \paragraph{Participant}
 \begin{enumerate}[font=\sffamily,label={\textbf{FR-\protect\twodigits{\theenumi}}},leftmargin=1.4cm, ref=FR-\protect\twodigits{\theenumi}]
-	\item As a participant, I can grant my consent, so that the measurement devices installed in my household start to collect measurements.\label{itm:fr-grant-consent}
-	\item As a participant, I can revoke my consent, so that the measurement devices installed in my household stop to collect measurements.\label{itm:fr-revoke-consent}
+	\item As a participant, I can grant my consent, so that the measurement devices installed in my household start collecting measurements.\label{itm:fr-grant-consent}
+	\item As a participant, I can revoke my consent, so that the measurement devices installed in my household stop collecting measurements.\label{itm:fr-revoke-consent}
 	\item As a participant, I can revoke my consent, so that my registration details are anonymized.\label{itm:fr-revoke-consent-anonymize}
 	\item As a participant, I can view my registration details, so that I am able to notify the researchers of mistakes.\label{itm:fr-view-registration-details}
 	\item As a participant, I can view my measurements, so that I am able to understand what kind of data is being captured, stored and processed.\label{itm:fr-view-measurements}
@@ -176,7 +174,7 @@ Whereas functional quality stresses conformance with the design specifications, 
 
 \paragraph{Availability}
 \begin{enumerate}[resume, font=\sffamily, label={\textbf{NFR-\protect\twodigits{\theenumi}}},leftmargin=1.7cm, ref=NFR-\protect\twodigits{\theenumi}]
-	\item The system shall be highly available so that measurements can be made, transmitted and stored around the clock.\label{itm:nfr-availability}
+	\item The system shall be highly available, so that measurements can be made, transmitted and stored around the clock.\label{itm:nfr-availability}
 \end{enumerate}
 
 \paragraph{Maintainability}
@@ -187,7 +185,7 @@ Whereas functional quality stresses conformance with the design specifications, 
 
 \paragraph{Testability}
 \begin{enumerate}[resume, font=\sffamily, label={\textbf{NFR-\protect\twodigits{\theenumi}}},leftmargin=1.7cm, ref=NFR-\protect\twodigits{\theenumi}]
-	\item The system shall employ a rigid test suite to ensure that as few regressions as possible are introduced accidentally. Coverage reports shall highlight the places lacking in tests so that these can be addressed in the future.\label{itm:nfr-testability}
+	\item The system shall employ a rigid test suite to ensure that as few regressions as possible are introduced accidentally. Coverage reports shall highlight the places lacking in tests, so that these can be addressed in the future.\label{itm:nfr-testability}
 \end{enumerate}
 
 \paragraph{Portability}
