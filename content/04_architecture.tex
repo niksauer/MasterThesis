@@ -58,7 +58,7 @@ The edge of this system is composed by the set of measurement devices that are t
 The cloud of this system is composed by the following set of microservices:
 
 \begin{description}[format={\storedescriptionlabel}]
-  \item[Data \acs{API}\label{itm:data-api}]
+  \item[Data \acs*{API}\label{itm:data-api}]
   \hfill \\
   The \ref{itm:data-api} acts as the single source of truth for each participant's registration details, consent, measurement devices and the measurements themselves. It offers a network interface to retrieve and modify these details, grant and revoke consent, and most importantly, add and retrieve measurements to and from a central data store that is accessible to the research group. Further, it takes care of anonymizing a participant's registration details upon revocation of his consent (see~\autoref{sec:survey-anonymization}) and tracks a measurement device's version and last date of activity. It may be argued that this component has a monolithic character due to the breadth of methods offered. Yet, the number of methods is not crucial to this judgement, but rather the degree to which they are related (comp.~\autoref{sec:microservice-definition} and \autoref{sec:microservice-decomposition}).
 
@@ -83,7 +83,7 @@ The cloud of this system is composed by the following set of microservices:
 
 Having given a high-level overview of the components comprising the system, this section will formalize core aspects of the system's two most important microservices.
 
-\subsection{\ref{itm:data-api}}
+\subsection{\ref*{itm:data-api}}
 \label{sec:component-specification-data-api}
 
 \subsubsection{Data Model}
@@ -215,7 +215,7 @@ While the microservice pattern does not dictate any specific kind of network int
 	    \labeltext[Endpoint~10]{10}{itm:data-endpoint-10} &	\texttt{GET} & \texttt{/management/household} & \ref{itm:fr-view-consent}, \ref{itm:fr-view-health-status} \\
 	    	\hline
 	\end{tabularx}
-  	\caption{\ref{itm:data-api} endpoints mapped to requirements}
+  	\caption{\ref*{itm:data-api} endpoints mapped to requirements}
   	\label{tab:data-api-endpoints}
 \end{table}
 
@@ -238,7 +238,7 @@ Since this microservice will be publicly exposed for consumption by the edge cli
 
   The main benefit of this authentication method is the ability to preload edge devices with certificates~\footnote{The patent presented in \cite{etchegoyen2013device} describes a method for binding digital certificates to one or more devices. In case of a breach, access for individual devices, rather than users, can be revoked.}~\footnote{\citeauthor{ammar2018internet} warn that embedding a key in a device can represent a security risk, if not regularly rotated, since, eventually, all cryptographic algorithms will be broken \cite[p.~23]{ammar2018internet}.}. In theory, this allows a measurement device to transmit data as soon as it is connected to a meter.
 
-  \paragraph{\ref{itm:registration-frontend} and \ref{itm:status-frontend}}
+  \paragraph{\ref*{itm:registration-frontend} and \ref*{itm:status-frontend}}
   These frontends will need to know a shared secret and present it with every request. The secret will collectively identify the research or administrator group, meaning that individual researchers and administrators are not discerned. Such differentiation is not needed as per the requirements presented in \autoref{sec:functional-requirements}.
 
   \item[Authorization\label{itm:data-api-authorization}]
@@ -255,7 +255,7 @@ Since this microservice will be publicly exposed for consumption by the edge cli
 		Administrators & \ref{itm:data-endpoint-10} \\
 	    	\hline
 	\end{tabularx}
-  	\caption{\ref{itm:data-api} endpoints mapped to user groups}
+  	\caption{\ref*{itm:data-api} endpoints mapped to user groups}
   	\label{tab:data-api-endpoints-user-groups}
 \end{table}
 
@@ -274,7 +274,7 @@ Since this microservice will be publicly exposed for consumption by the edge cli
 		\texttt{measurement-write} & \ref{itm:data-endpoint-8} \\
 	    	\hline
 	\end{tabularx}
-  	\caption{\ref{itm:data-api} endpoints mapped to permission scopes}
+  	\caption{\ref*{itm:data-api} endpoints mapped to permission scopes}
   	\label{tab:data-api-endpoints-permission-scopes}
 \end{table}
 
@@ -288,7 +288,7 @@ Since this microservice will be publicly exposed for consumption by the edge cli
 With regard to shielding data of one participant from that of another, the service interface has already been designed from the perspective of the currently authenticated user (comp.~\ref{itm:data-endpoint-1} -- \ref{itm:data-endpoint-9} in \autoref{tab:data-api-endpoints}). Hence, no additional access control measures are needed.
 
 
-\subsection{\ref{itm:data-aggregator}}
+\subsection{\ref*{itm:data-aggregator}}
 \label{sec:component-specification-data-aggregator}
 
 \subsubsection{Data Model}
@@ -318,7 +318,7 @@ Recalling the fact that the application layer is responsible for ensuring a cons
 	    	\texttt{0100100700ff} & \texttt{16.7.0} & Sum active instantaneous power (in \si{\kilo\watt}) \\
 	    	\hline
 	\end{tabularx}
-  	\caption{Relevant \acs{OBIS} codes in metering equipment}
+  	\caption{Relevant \acs*{OBIS} codes in metering equipment}
   	\label{tab:relevant-obis-codes}
 \end{table}
 
@@ -335,7 +335,7 @@ Although the component's overall control flow has already been discussed in \aut
 \begin{figure}[hbt]
   \centering
   \includegraphics[width=\textwidth]{resources/04_architecture/data-aggregator-flowchart}
-  \caption{Control flow of the \ref{itm:data-aggregator}}
+  \caption{Control flow of the \ref*{itm:data-aggregator}}
   \label{fig:data-aggregator-control-flow}
 \end{figure}
 
@@ -367,7 +367,7 @@ Whereas \acs{TLS} is traditionally used to ensure the secrecy and integrity of d
 For these tasks, an extensive amount of infrastructure, tools and expertise can be reused \cite[p.~37]{hummen2013towards}.
 
 
-\paragraph{\ref{itm:device-frontend} Considerations}
+\paragraph{\ref*{itm:device-frontend} Considerations}
 It shall be noted that \acl{JS} lacks \acsp{API} to comfortably interact with a browser's client certificate store. For instance, it is not possible to implement a logout functionality that clears the current session's certificate choice \cite[p.~8]{parsovs2013practical}. Such functionality, however, is required in client-side web applications, such as the \ref{itm:device-frontend}, which should be protected from unauthorized access. Moreover, using certificate-based authentication in such applications assumes that users have access to certificates. In this application context, however, certificates are only embedded in measurement devices. And since these measurement devices are headless (comp.~\autoref{sec:survey-overview}), participants will be required to use another, separate device to access the \ref{itm:device-frontend}. This problem can be solved by either:
 
 \begin{itemize}
@@ -434,7 +434,7 @@ While in theory this setup would allow for an arbitrary data exchange, consumer-
 Once the measurement probe described above is connected to a measurement device (e.g. via USB), the \ref{itm:data-aggregator} will have access to a continuous stream of bits that represent parts of the \acs{SML} telegrams successively emitted by a meter. Naturally, these bits will have to be buffered until a complete telegram can be reconstructed. The exact format, as well as the different types of \acs{SML} messages available, are standardized in \acs{DIN} \acs{VDE} 0418-63-9 \cite{vde2018sml}. Therefore, this section will not go into further detail, even more so because this task will likely be delegated to a third-party library~\footnote{\url{https://github.com/spacemanspiff2007/SmlLib}}. However, it shall be noted that multiple different (sub-)versions of the \acs{SML} communication protocol exist. This must be taken into account by the \ref{itm:data-aggregator}.
 
 
-\subsubsection{\acs{PIN} Input}
+\subsubsection{\acs*{PIN} Input}
 \label{sec:meter-pin-input}
 
 The process of entering a meter's \acs{PIN} has, unfortunately, not been standardized as rigorously. In fact, during the course of this project, it has been observed that the steps, i.e. the signal lengths and pauses required in-between, vary from model to model and sometimes, even for the same model. Further, some models protect the detailed data readout by hiding it behind an additional menu setting. Therefore, it is safe to say that this aspect of the system represents the greatest barrier to compatibility and inclusion of a household in the data collection survey.
@@ -529,7 +529,7 @@ For debugging purposes and other maintenance activities, it will be necessary to
 \begin{figure}[hbt]
   \centering
   \includegraphics[width=0.85\textwidth]{resources/04_architecture/reverse-ssh-tunnel}
-  \caption{Reverse \acs{SSH} tunnel to allow remote access}
+  \caption{Reverse \acs*{SSH} tunnel to allow remote access}
   \label{fig:remote-ssh-tunnel}
 \end{figure}
 
@@ -564,7 +564,7 @@ It is clear that the system's effectiveness depends on the cyber-physical intera
 	    \labeltext[Endpoint~13]{13}{itm:data-endpoint-13} & \texttt{POST} & \texttt{/household/meter/:uuid/incident/resolve} \\
 	    	\hline
 	\end{tabularx}
-  	\caption{\ref{itm:data-api} endpoints to track meter incidents}
+  	\caption{\ref*{itm:data-api} endpoints to track meter incidents}
   	\label{tab:data-api-endpoints-incidents}
 \end{table}
 

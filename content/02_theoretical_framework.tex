@@ -108,7 +108,7 @@ A service registry acts as a database of services, storing the various instances
 In any case, the service registry is a critical component and thus, must be highly available.
 
 
-\subsection{\acs{API} Gateway Pattern}
+\subsection{\acs*{API} Gateway Pattern}
 \label{sec:api-gateway-pattern}
 
 Depending on the decomposition technique chosen (see~\autoref{sec:microservice-decomposition}), microservices might provide very fine-grained \acsp{API}. In turn, this means that clients may need to interact with multiple different services in order to carry out a high-level business process. To hide this complexity from clients and ensure consistent behavior, a pattern known as the \acs{API} gateway is employed.
@@ -121,7 +121,7 @@ An \acs{API} gateway represents the single entrypoint for all clients in which s
     \qquad
     \subfloat[]{{\includegraphics[width=\textwidth]{resources/02_theoretical_framework/microservice_architecture/api-proxy-pattern} }}%
 
-    \caption[Service consumption model with and without an \acs{API} gateway]{Service consumption model with (a) and without (b) an \acs{API} gateway \cite{netflix2013api}}
+    \caption[Service consumption model with and without an \acs*{API} gateway]{Service consumption model with (a) and without (b) an \acs*{API} gateway \cite{netflix2013api}}
     \label{fig:api-gateway-pattern}
 \end{figure}
 

@@ -205,3 +205,16 @@
 %  \ifnum#1<100 0\fi
   \ifnum#1<10 0\fi
   \number#1}
+  
+% no link for starred versions of acronyms
+\makeatletter
+\AtBeginDocument{%
+  \renewcommand*\AC@hyperlink{%
+    \ifAC@starred
+      \expandafter\@secondoftwo
+    \else
+      \expandafter\hyperlink
+    \fi
+  }%
+}
+\makeatother
