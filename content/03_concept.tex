@@ -57,7 +57,7 @@ Even though the survey hopes to cover a diverse set of households, it currently 
   \item Does your household have a home battery?
 \end{itemize}
 
-\paragraph{\aclp{PVS}}
+\paragraph{Photovoltaic systems}
 \begin{itemize}
   \item What is the nominal power for each of your \acp{PVS}?
   \item What is the azimuth and tilt angle for each of your \acp{PVS}?
@@ -122,7 +122,7 @@ Obviously, \ref{itm:anonymization-step-remove-contact} is the most straightforwa
 \label{eq:anonymize-location-min-max-distance}
 \end{equation}
 
-  \item[Anonymization of \aclp{PVS}]
+  \item[Anonymization of photovoltaic systems]
   \hfill \\
   To protect a participant's identity but preserve some context among measurements, each of a household's \acsp{PVS} shall be anonymized by normalizing its specifications. To be specific, the nominal power of a \ac{PVS} shall be rounded to the nearest integer and the installation date shall now only track the year. As for the azimuth and tilt angles, the research group has found that the German public registry only tracks these values vaguely, meaning that, in the context of this survey, no normalization is required thereof.
 \end{description}

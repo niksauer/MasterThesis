@@ -53,7 +53,7 @@ A microservice-based application is one in which the core functionality has been
 The task of splitting an application into services should happen along the lines of related processes that can be carried out in isolation and should not just arbitrarily distribute features across services \cite[p.~61]{taibi2018definition}. As in traditional software engineering, the term \enquote{cohesiveness} is used to indicate that a service only implements functionalities which are strongly related to the concern that the service is meant to model \cite[p.~2]{dragoni2017microservices}. Various techniques are cited to determine the breadth of concern:
 
 \begin{description}
-  \item[Single Responsibility Principle]
+  \item[Single responsibility principle]
   \hfill \\
   Defines a responsibility of a class as a reason to change and states that a class should only have one such reason \cite[p.~36]{messina2016simplified} \cite[p.~116]{thones2015microservices}. Is analogously applied to microservices. Leads to a large amount of services.
 
@@ -61,7 +61,7 @@ The task of splitting an application into services should happen along the lines
   \hfill \\
   Splits an application into distinct sets of related functions. Each set is implemented by a microservice. In a verb-based approach, sets consist of a single function which covers a specific use case, whereas the noun-based approach creates sets of functions responsible for all operations related to a particular entity \cite[p.~36]{messina2016simplified}. Leads to large and medium amount of services, respectively.
 
-  \item[\acl*{DDD}]
+  \item[Domain-driven design]
   \hfill \\
   Refers to the application's problem space, i.e. the business, as the domain. This domain consists of multiple subdomains (e.g. product catalog, order management). Each subdomain is represented by a microservice\todo{add citation} \cite[p.~3]{balalaie2016microservices}. Leads to a small amount of services.
 \end{description}
@@ -242,7 +242,7 @@ As previously hinted at, containers rely on the host's kernel to sandbox process
   \hfill \\
   Control groups, usually referred to as cgroups, provide resource accounting and limiting for a set of processes  \cite[p.~387]{morabito2015hypervisors} \cite[p.~1]{merkel2014docker}. Even though they are not mandatory for process isolation, cgroups can ensure that one container cannot starve another (e.g. in a denial-of-service attack), and can equally help to realize cost-accounting multi-tenant environments \cite[p.~4]{eder2016hypervisor}.
 
-  \item[\acl{MAC}]
+  \item[Mandatory access control]
   \hfill \\
   \ac{MAC} describes a concept in which access to or operations on a particular resource is granted based on different authorization rules (\textit{policies}). On Linux, the two prevalent implementations hereof are AppArmor and \acs*{SELinux}~\footnote{\ac*{SELinux} was originally developed by the \acl*{NSA} to address threats of tampering and enable the confinement of damage caused by malicious applications.}\todo{add citation}. In the context of containers, \ac{MAC} is useful in that it can restrict the process to its minimal requirements, thus further reducing the attack surface against the host and other containers \cite[p.~4]{eder2016hypervisor}.
 \end{description}
@@ -292,7 +292,7 @@ A container orchestration platform can be broadly defined as a system that provi
   \hfill \\
   Operators need to be able to deploy, i.e. schedule, containers onto hosts based on a variety of parameters. Typically, this encompasses a replication degree and placement constraints such as \gls{node affinity} or resource requests \cite[p.~225]{casalicchio2019container}. Deployments should also be able to take advantage of local inter-process communication by allowing containers to be co-located on the same node. Once scheduled, the platform should perform a readiness check to decide whether the container is capable of answering requests. Similarly, periodic health checks should be used to determine whether a container needs to be restarted or rescheduled onto a different host \cite[p.~2]{al2019container}.
 
-  \item[Scaling \& Availability]
+  \item[Scaling \& availability]
   \hfill \\
   To cope with increases in traffic, horizontal scaling of applications is critical \cite[p.~1]{al2019container}. In this context, an application refers to one or multiple containers that are managed as a single entity \cite[p.~44]{khan2017key} \cite[p.~2]{pahl2017cloud}. Scaling may happen based on a static replication factor or through threshold-based autoscaling policies (e.g. \acs{CPU} or memory utilization). Platforms should also allow operators to define more sophisticated policies via external plug-ins. Naturally, the load then needs to be distributed amongst container instances by means of a load balancer that utilizes the health check mentioned above to decide whether to include a container instance in its target set or not \cite[pp.~225--226]{casalicchio2019container} \cite[p.~2]{al2019container}. However, scaling by itself does not guarantee high availability or fault tolerance. This is especially true when dealing with a single node cluster. Instead, operators should follow the three principles of reliability engineering in which failures need to be detected, single points of failure eliminated and reliable crossovers established \cite[p.~45]{khan2017key}. Of this, redundancy, i.e. replication across physically separated hosts, remains the most important feature, though self-healing due to detecting failures early is just as key. A container platform must support and implement both techniques \cite[p.~176]{vayghan2019microservice} \cite[p.~53]{burns2016borg}.
 

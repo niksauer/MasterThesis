@@ -41,7 +41,7 @@ Like any software architecture, this named set of constraints intends to outline
 Derived from several other pre-existing architectures \cite[p.~76]{fielding2000architectural}, \ac{REST} is best explained as a combination of the following architectural styles and constraints:
 
 \begin{description}[format={\storedescriptionlabel}]
-	\item[Client-Server]
+	\item[Client-server]
 	\hfill \\
 	The principle of separation of concerns allows components to evolve independently. By splitting the user interface engine concerns (\textit{client}) from data storage concerns (\textit{server}), portability and scalability improve \cite[p.~78]{fielding2000architectural}.
 	\item[Stateless]
@@ -50,7 +50,7 @@ Derived from several other pre-existing architectures \cite[p.~76]{fielding2000a
 	\item[Cache]
 	\hfill \\
 	Data returned by a server (\textit{response}) may be implicitly or explicitly labeled as cacheable or non-cacheable. In some cases, the cache may entirely eliminate interactions, again improving efficiency, scalability, and user-perceived performance, though caution must be taken since reliability issues may arise through stale data \cite[pp.~79--80]{fielding2000architectural}.
-	\item[Uniform Interface]
+	\item[Uniform interface]
 	\hfill \\
 	While a standardized component interaction interface simplifies the overall system architecture, it disregards the efficiency improvements that can be gained from an application-level decision of such \cite[pp.~81--82]{fielding2000architectural}. The exact communication constraints are discussed in the next section.
 \end{description}
@@ -73,19 +73,19 @@ A resource's value may be static or variable (document vs. current weather), tho
 From here on, \citeauthor{fielding2000architectural} explains that \ac{REST} components perform actions on a resource by exchanging stateless messages composed of \cite[pp.~90--91]{fielding2000architectural}:
 
 \begin{description}[format={\storedescriptionlabel}]
-	\item[Resource Identifier]
+	\item[Resource identifier]
 	\hfill \\
 	Unique identifier used to address that particular resource.
 	\item[Representation]
 	\hfill \\
 	Depending on the \textit{control data}, the representation may capture the current or intended state of a requested resource, value of a different resource (e.g. user input) or an error condition.
-	\item[Representation Metadata]
+	\item[Representation metadata]
 	\hfill \\
 	Describes the supplied representation.
-	\item[Resource Metadata]
+	\item[Resource metadata]
 	\hfill \\
 	Information about the resource that is not specific to the supplied representation.
-	\item[Control Data]
+	\item[Control data]
 	\hfill \\
 	Defines the message's purpose such as the action requested or meaning of the response. Can also be used to parameterize requests or override default behavior.
 \end{description}
