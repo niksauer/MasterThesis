@@ -198,13 +198,9 @@ In traditional hardware virtualization, a so-called hypervisor makes siloed slic
   \hfill \\
   Operates directly on top of the host's hardware and requires no host \acs{OS}.
 
-%  \textbf{Examples:} Xen, Hyper-V
-
   \item[Type 2 (hosted)]
   \hfill \\
   Operates as a software layer on top of the host's \acs{OS}.
-
-%  \textbf{Examples:} KVM, VMware Workstation, VirtualBox
 \end{description}
 
 Although virtualization through emulation enjoys great popularity~\footnote{Hardware acceleration for hypervisor-based virtualization has even been incorporated into commodity processors \cite[p.~233]{xavier2013performance}.}, it comes at the cost of efficiency. On the other hand, the overhead introduced by OS-level virtualization can be considered almost negligible \cite[pp.~386,~392]{morabito2015hypervisors}.
