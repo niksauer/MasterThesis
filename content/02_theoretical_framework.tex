@@ -53,7 +53,7 @@ A microservice-based application is one in which the core functionality has been
 The task of splitting an application into services should happen along the lines of related processes that can be carried out in isolation and should not just arbitrarily distribute features across services \cite[p.~61]{taibi2018definition}. As in traditional software engineering, the term \enquote{cohesiveness} is used to indicate that a service only implements functionalities which are strongly related to the concern that the service is meant to model \cite[p.~2]{dragoni2017microservices}. Various techniques are cited to determine the breadth of concern:
 
 \begin{description}
-  \item[\acl{SRP}]
+  \item[Single Responsibility Principle]
   \hfill \\
   Defines a responsibility of a class as a reason to change and states that a class should only have one such reason \cite[p.~36]{messina2016simplified} \cite[p.~116]{thones2015microservices}. Is analogously applied to microservices. Leads to a large amount of services.
 
@@ -61,7 +61,7 @@ The task of splitting an application into services should happen along the lines
   \hfill \\
   Splits an application into distinct sets of related functions. Each set is implemented by a microservice. In a verb-based approach, sets consist of a single function which covers a specific use case, whereas the noun-based approach creates sets of functions responsible for all operations related to a particular entity \cite[p.~36]{messina2016simplified}. Leads to large and medium amount of services, respectively.
 
-  \item[\acl{DDD}]
+  \item[\acl*{DDD}]
   \hfill \\
   Refers to the application's problem space, i.e. the business, as the domain. This domain consists of multiple subdomains (e.g. product catalog, order management). Each subdomain is represented by a microservice\todo{add citation} \cite[p.~3]{balalaie2016microservices}. Leads to a small amount of services.
 \end{description}
@@ -149,7 +149,7 @@ To keep microservices loosely coupled, a pattern known as database-per-service i
   Each service has its own database.
 \end{description}
 
-While this pattern contributes to service intimacy, it comes at the cost of having to redefine data models and restate business rules across services~\footnote{In \acl{DDD}, the concept of a Bounded Context describes that services operate with business objects in a specific context and therefore, only need to model a subset of the global object's attributes \cite[p.~30]{cerny2018contextual}.} \cite[p.~30]{cerny2018contextual}.
+While this pattern contributes to service intimacy, it comes at the cost of having to redefine data models and restate business rules across services~\footnote{In domain-driven design, the concept of a Bounded Context describes that services operate with business objects in a specific context and therefore, only need to model a subset of the global object's attributes \cite[p.~30]{cerny2018contextual}.} \cite[p.~30]{cerny2018contextual}.
 
 
 \subsection{Delineation from \acl{SOA}}
@@ -176,7 +176,7 @@ An important remark that \citeauthor{cerny2018contextual} make is that orchestra
 Lastly, the most obvious and biggest drawback of \acp{SOA} and their centralized orchestration model must be stated. Using a centralized business process to integrate all services once again entails having a single point of failure.
 
 
-\section{OS-level Virtualization}
+\section{\acs*{OS}-level Virtualization}
 \label{sec:os-level-virtualization}
 
 Virtualization describes the act of creating a virtual version of something \cite[p.~2]{celesti2016exploring}. In the context of computing, it specifically refers to hardware resources such as \acs{CPU}, memory, storage or network devices which can be used to create complete virtual instances of computer systems \cite[p.~21]{da2018containers}. This section sheds light on the motivation behind virtualization, gives a brief overview of the traditional approach hereto and focuses on a more recent and lightweight alternative in the remainder.
@@ -203,7 +203,7 @@ In traditional hardware virtualization, a so-called hypervisor makes siloed slic
   Operates as a software layer on top of the host's \acs{OS}.
 \end{description}
 
-Although virtualization through emulation enjoys great popularity~\footnote{Hardware acceleration for hypervisor-based virtualization has even been incorporated into commodity processors \cite[p.~233]{xavier2013performance}.}, it comes at the cost of efficiency. On the other hand, the overhead introduced by OS-level virtualization can be considered almost negligible \cite[pp.~386,~392]{morabito2015hypervisors}.
+Although virtualization through emulation enjoys great popularity~\footnote{Hardware acceleration for hypervisor-based virtualization has even been incorporated into commodity processors \cite[p.~233]{xavier2013performance}.}, it comes at the cost of efficiency. On the other hand, the overhead introduced by \acs{OS}-level virtualization can be considered almost negligible \cite[pp.~386,~392]{morabito2015hypervisors}.
 
 Whereas hypervisor-based virtualization provides strong isolation guarantees between systems, \acs{OS}-level virtualization only strives to isolate processes. Such an isolated process is known as a container~\footnote{Containers are known as jails or zones in the FreeBSD and Solaris \acsp{OS}, respectively \cite[p.~2]{eder2016hypervisor}.}. Here, the isolation mechanisms are provided as kernel features which establish an abstract and protected view on the \acs{OS}, making two containers unaware of each other or any of the other processes which run on the host \cite[p.~2]{merkel2014docker} \cite[pp.~1--2]{eder2016hypervisor}.
 
@@ -213,7 +213,7 @@ Whereas hypervisor-based virtualization provides strong isolation guarantees bet
     \qquad
     \subfloat[]{{\includegraphics[width=0.38\textwidth]{resources/02_theoretical_framework/os_level_virtualization/virtualization-container} }}%
 
-    \caption[Hardware and OS-level virtualization]{Hardware (a) and OS-level (b) virtualization \cite[p.~387]{morabito2015hypervisors}}
+    \caption[Hardware and \acs*{OS}-level virtualization]{Hardware (a) and \acs*{OS}-level (b) virtualization \cite[p.~387]{morabito2015hypervisors}}
     \label{fig:hypervisor-container-virtualization}
 \end{figure}
 
@@ -221,7 +221,7 @@ Whereas hypervisor-based virtualization provides strong isolation guarantees bet
 
 Even though both technologies enable a safe multi-tenant model of hardware by confining parts of the application infrastructure, \citeauthor{pahl2015containerization} ascribes them to different use cases, arguing that \acp{VM} are concerned with hardware allocation and management, while containers are tools for delivering software. He further compares them to the concepts of \acs{IaaS} and \acs{PaaS}, respectively \cite[p.~24]{pahl2015containerization}. \citeauthor{eder2016hypervisor} and \citeauthor{merkel2014docker} see the potential that the two technologies would have in complementing each other since the resource footprint of containers is minimal and its security profile is still slightly worse than that of \acsp{VM}~\footnote{Kernels cannot prevent interference in low-level resources such as the \acs{CPU}'s L3 cache or memory bandwidth \cite[p.~52]{burns2016borg}. A good example of combining both virtualization technologies is given by the Google Kubernetes Engine. Here, a cluster of hosts is created on the basis of \acsp{VM} which then exclusively run software in the form of containers.}\todo{add citation}~\cite[p.~6]{eder2016hypervisor} \cite[p.~2]{merkel2014docker}.
 
-Lastly, it shall be noted that the shared kernel approach of containers means that processes being isolated need to be compatible with the host's kernel and \acs{CPU} architecture \cite[p.~386]{morabito2015hypervisors} \cite[p.~2]{eder2016hypervisor}. In other words, it is not possible to, for example, run Windows containers on Linux hosts or deploy x86 containers on ARM because no emulation is taking place. On the flip side, the shared kernel approach allows kernel security patches to be applied without having to modify a container. This is not the case for a \acs{VM}, where the underlying machine image would have to be rebuilt first \cite[p.~3]{eder2016hypervisor}. Moreover, sharing a kernel allows container-based solutions to achieve a higher density of virtualized instances when compared to hypervisor-based solutions \cite[p.~386]{morabito2015hypervisors} \cite[p.~204]{kang2016container}. Containers are also a magnitude faster to start and stop since they are essentially just processes that have to be spawned and terminated, whereas the \acs{OS} of a \acs{VM} needs to be fully booted and shut down \cite[p.~2]{merkel2014docker} \cite[p.~2]{eder2016hypervisor}. Similarly, being a process means that containers do not occupy any resources when they are not executing. \acsp{VM} will idle until they are shut down \cite[p.~2]{merkel2014docker}.
+Lastly, it shall be noted that the shared kernel approach of containers means that processes being isolated need to be compatible with the host's kernel and \acs{CPU} architecture \cite[p.~386]{morabito2015hypervisors} \cite[p.~2]{eder2016hypervisor}. In other words, it is not possible to, for example, run Windows containers on Linux hosts or deploy x86 containers on \acs{ARM} because no emulation is taking place. On the flip side, the shared kernel approach allows kernel security patches to be applied without having to modify a container. This is not the case for a \acs{VM}, where the underlying machine image would have to be rebuilt first \cite[p.~3]{eder2016hypervisor}. Moreover, sharing a kernel allows container-based solutions to achieve a higher density of virtualized instances when compared to hypervisor-based solutions \cite[p.~386]{morabito2015hypervisors} \cite[p.~204]{kang2016container}. Containers are also a magnitude faster to start and stop since they are essentially just processes that have to be spawned and terminated, whereas the \acs{OS} of a \acs{VM} needs to be fully booted and shut down \cite[p.~2]{merkel2014docker} \cite[p.~2]{eder2016hypervisor}. Similarly, being a process means that containers do not occupy any resources when they are not executing. \acsp{VM} will idle until they are shut down \cite[p.~2]{merkel2014docker}.
 
 
 \subsection{Linux Kernel Containment Features}
@@ -240,11 +240,11 @@ As previously hinted at, containers rely on the host's kernel to sandbox process
 
   \item[Control groups]
   \hfill \\
-  Control groups, usually referred to as cgroups, provide resource accounting and limiting for a set of processes  \cite[p.~387]{morabito2015hypervisors} \cite[p.~1]{merkel2014docker}. Even though they are not mandatory for process isolation, cgroups can ensure that one container cannot starve another (e.g. in a \acs{DoS} attack), and can equally help to realize cost-accounting multi-tenant environments \cite[p.~4]{eder2016hypervisor}.
+  Control groups, usually referred to as cgroups, provide resource accounting and limiting for a set of processes  \cite[p.~387]{morabito2015hypervisors} \cite[p.~1]{merkel2014docker}. Even though they are not mandatory for process isolation, cgroups can ensure that one container cannot starve another (e.g. in a denial-of-service attack), and can equally help to realize cost-accounting multi-tenant environments \cite[p.~4]{eder2016hypervisor}.
 
   \item[\acl{MAC}]
   \hfill \\
-  \ac{MAC} describes a concept in which access to or operations on a particular resource is granted based on different authorization rules (\textit{policies}). On Linux, the two prevalent implementations hereof are AppArmor and \acs{SELinux}~\footnote{\ac{SELinux} was originally developed by the \acs{NSA} to address threats of tampering and enable the confinement of damage caused by malicious applications.}\todo{add citation}. In the context of containers, \ac{MAC} is useful in that it can restrict the process to its minimal requirements, thus further reducing the attack surface against the host and other containers \cite[p.~4]{eder2016hypervisor}.
+  \ac{MAC} describes a concept in which access to or operations on a particular resource is granted based on different authorization rules (\textit{policies}). On Linux, the two prevalent implementations hereof are AppArmor and \acs*{SELinux}~\footnote{\ac*{SELinux} was originally developed by the \acl*{NSA} to address threats of tampering and enable the confinement of damage caused by malicious applications.}\todo{add citation}. In the context of containers, \ac{MAC} is useful in that it can restrict the process to its minimal requirements, thus further reducing the attack surface against the host and other containers \cite[p.~4]{eder2016hypervisor}.
 \end{description}
 
 
@@ -301,13 +301,13 @@ A container orchestration platform can be broadly defined as a system that provi
   Platforms should facilitate monitoring across two contexts. First, the cluster infrastructure needs to be observed for resource utilization and draining. Secondly, container activity must be made visible by aggregating logs and performance metrics, as well as allowing \gls{white-box tracing} of requests \cite[p.~47]{khan2017key}.
 \end{description}
 
-Next to these basic capabilities, platforms may further implement a slew of features across domains such as security, networking or maintenance. As an example, platforms could provide role-based access control for containers, allow configuring \acl{MAC} (see~\autoref{sec:linux-kernel-containment-features}) on a per container basis, scan container images for vulnerabilities (see~\autoref{sec:docker}), add support for the service registry pattern (see~\autoref{sec:service-registry-pattern}) or enable cluster-wide backups.
+Next to these basic capabilities, platforms may further implement a slew of features across domains such as security, networking or maintenance. As an example, platforms could provide role-based access control for containers, allow configuring \acs{MAC} (see~\autoref{sec:linux-kernel-containment-features}) on a per container basis, scan container images for vulnerabilities (see~\autoref{sec:docker}), add support for the service registry pattern (see~\autoref{sec:service-registry-pattern}) or enable cluster-wide backups.
 
 
 \subsection{Reference Architecture}
 \label{sec:orchestration-reference-architecture}
 
-In a survey on the state of the art in container orchestration technologies, \citeauthor{casalicchio2019container} describes how a container orchestrator may be implemented as an autonomic computing system based on the \acs{MAPE-K} control loop \cite[pp.~226-228]{casalicchio2019container}. Such systems manage themselves by dynamically adapting to changes in accordance to business policies and objectives\todo{add citation}. For compute clusters, this typically involves goals such as maximizing resource usage, reducing energy consumption or satisfying \acsp{SLA}.
+In a survey on the state of the art in container orchestration technologies, \citeauthor{casalicchio2019container} describes how a container orchestrator may be implemented as an autonomic computing system based on the \acs{MAPE-K} control loop \cite[pp.~226-228]{casalicchio2019container}. Such systems manage themselves by dynamically adapting to changes in accordance to business policies and objectives\todo{add citation}. For compute clusters, this typically involves goals such as maximizing resource usage, reducing energy consumption or satisfying service-level agreements.
 
 \begin{figure}[hbt]
   \centering
