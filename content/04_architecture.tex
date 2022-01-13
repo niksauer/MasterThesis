@@ -215,7 +215,7 @@ While the microservice pattern does not dictate any specific kind of network int
 	    \labeltext[Endpoint~10]{10}{itm:data-endpoint-10} &	\texttt{GET} & \texttt{/management/household} & \ref{itm:fr-view-consent}, \ref{itm:fr-view-health-status} \\
 	    	\hline
 	\end{tabularx}
-  	\caption{Data \acs{API} endpoints mapped to requirements}
+  	\caption{\ref{itm:data-api} endpoints mapped to requirements}
   	\label{tab:data-api-endpoints}
 \end{table}
 
@@ -255,7 +255,7 @@ Since this microservice will be publicly exposed for consumption by the edge cli
 		Administrators & \ref{itm:data-endpoint-10} \\
 	    	\hline
 	\end{tabularx}
-  	\caption{Data \acs{API} endpoints mapped to user groups}
+  	\caption{\ref{itm:data-api} endpoints mapped to user groups}
   	\label{tab:data-api-endpoints-user-groups}
 \end{table}
 
@@ -299,7 +299,7 @@ In true microservice fashion, this component will only need to model a single en
 \begin{figure}[hbt]
   \centering
   \includegraphics[width=0.38\textwidth]{resources/04_architecture/data-aggregator-erm}
-  \caption{Modeling an edge client's measurements}
+  \caption{Modeling of an edge client's measurements}
   \label{fig:data-aggregator-erm}
 \end{figure}
 
@@ -335,7 +335,7 @@ Although the component's overall control flow has already been discussed in \aut
 \begin{figure}[hbt]
   \centering
   \includegraphics[width=\textwidth]{resources/04_architecture/data-aggregator-flowchart}
-  \caption{Control flow of \ref{itm:data-aggregator}}
+  \caption{Control flow of the \ref{itm:data-aggregator}}
   \label{fig:data-aggregator-control-flow}
 \end{figure}
 
@@ -564,7 +564,7 @@ It is clear that the system's effectiveness depends on the cyber-physical intera
 	    \labeltext[Endpoint~13]{13}{itm:data-endpoint-13} & \texttt{POST} & \texttt{/household/meter/:uuid/incident/resolve} \\
 	    	\hline
 	\end{tabularx}
-  	\caption{Data \acs{API} endpoints to track meter incidents}
+  	\caption{\ref{itm:data-api} endpoints to track meter incidents}
   	\label{tab:data-api-endpoints-incidents}
 \end{table}
 
