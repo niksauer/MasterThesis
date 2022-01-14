@@ -12,7 +12,7 @@ Popularized by companies such as Amazon, Netflix, Uber, LinkedIn and SoundCloud,
 \subsection{The Monolith Problem}
 \label{sec:monolith-problem}
 
-A monolith is a software application whose modules cannot be executed independently \cite[p.~1]{dragoni2017microservices}. Hence, a monolith is characterized by requiring to be deployed as a united solution \cite[p.~24]{dmitry2014micro}. Based on this definition, a set of obstructive characteristics inherent to monolithic applications can be derived:
+A monolith is a software application whose modules cannot be executed independently~\cite[p.~1]{dragoni2017microservices}. Hence, a monolith is characterized by requiring to be deployed as a united solution \cite[p.~24]{dmitry2014micro}. Based on this definition, a set of obstructive characteristics inherent to monolithic applications can be derived:
 
 \begin{description}
   \item[Maintainability]
@@ -22,6 +22,8 @@ A monolith is a software application whose modules cannot be executed independen
  \item[Dependencies and technology lock-in]
   \hfill \\
   Monoliths typically suffer from the \enquote{dependency hell} problem, where an application's modules depend on conflicting versions of a shared library \cite[p.~2]{dragoni2017microservices}. In cases where this has been solved, the likelihood of having to make many changes to update to a newer version of a library again increases with a growing codebase. Next to that, it becomes very difficult to change the technology stack, leading to a lock-in and forcing developers to use the same language in every problem domain \cite[p.~24]{dmitry2014micro} \cite[p.~2]{dragoni2017microservices}.
+
+\newpage
 
   \item[Deployment]
   \hfill \\
@@ -63,7 +65,7 @@ The task of splitting an application into services should happen along the lines
 
   \item[Domain-driven design]
   \hfill \\
-  Refers to the application's problem space, i.e. the business, as the domain \cite{evans2004domain}. This domain consists of multiple subdomains (e.g. product catalog, order management). Each subdomain is represented by a microservice \cite[p.~3]{balalaie2016microservices}. Leads to a small amount of services.
+  Refers to the application's problem space, i.e. the business, as the domain~\cite{evans2004domain}. This domain consists of multiple subdomains (e.g. product catalog, order management). Each subdomain is represented by a microservice \cite[p.~3]{balalaie2016microservices}. Leads to a small amount of services.
 \end{description}
 
 Irrespective of the technique chosen, the overall goal should be to minimize later interface changes, i.e. to establish proper service contracts \cite[p.~26]{dmitry2014micro}.
@@ -175,6 +177,7 @@ An important remark that \citeauthor{cerny2018contextual} make is that orchestra
 
 Lastly, the most obvious and biggest drawback of \acp{SOA} and their centralized orchestration model must be stated. Using a centralized business process to integrate all services once again entails having a single point of failure.
 
+\newpage
 
 \section{\acs*{OS}-level Virtualization}
 \label{sec:os-level-virtualization}
@@ -290,7 +293,9 @@ A container orchestration platform can be broadly defined as a system that provi
 \begin{description}
   \item[Scheduling]
   \hfill \\
-  Operators need to be able to deploy, i.e. schedule, containers onto hosts based on a variety of parameters. Typically, this encompasses a replication degree and placement constraints such as \gls{node affinity} or resource requests \cite[p.~225]{casalicchio2019container}. Deployments should also be able to take advantage of local inter-process communication by allowing containers to be co-located on the same node. Once scheduled, the platform should perform a readiness check to decide whether the container is capable of answering requests. Similarly, periodic health checks should be used to determine whether a container needs to be restarted or rescheduled onto a different host \cite[p.~2]{al2019container}.
+  Operators need to be able to deploy, i.e. schedule, containers onto hosts based on a variety of parameters. Typically, this encompasses a replication degree and placement constraints such as \gls{node affinity} or resource requests~\cite[p.~225]{casalicchio2019container}. Deployments should also be able to take advantage of local inter-process communication by allowing containers to be co-located on the same node. Once scheduled, the platform should perform a readiness check to decide whether the container is capable of answering requests. Similarly, periodic health checks should be used to determine whether a container needs to be restarted or rescheduled onto a different host \cite[p.~2]{al2019container}.
+  
+\newpage
 
   \item[Scaling \& availability]
   \hfill \\

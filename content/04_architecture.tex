@@ -115,6 +115,8 @@ Next, the answers to the location and metadata subjects of the registration form
 
 Here, the decision to model the relationship as foreign keys with a unique constraint on the \texttt{Metadata} and \texttt{Address} entities shall be noted. This will lead to a \texttt{0..1} cardinality, meaning that this data does not necessarily have to be supplied for an individual household, even if its presence will be enforced on the application layer. The same result may be achieved through nullable foreign keys on the \texttt{Household} entity, although that approach would necessitate a primary key on the \texttt{Metadata} and \texttt{Address} entities which makes less sense conceptually since these details shall not exist on their own.
 
+\newpage
+
 Before the remaining registration details are modeled, two types of constants shall be introduced with \autoref{tab:meter-type-model-number-constants}. These constants will be used to differentiate electricity and generation meters, as well as to specify the model number of a meter itself. The latter is needed because the steps to take measurements from a meter will likely vary across models.
 
 \begin{table}[hbt]
@@ -282,7 +284,7 @@ Since this microservice will be publicly exposed for consumption by the edge cli
 
 \FloatBarrier
 
-	Scopes support the principle of least privilege. For instance, the \ref{itm:data-transmitter} only needs the \texttt{measurement-write} scope to perform its primary task of uploading measurements (in addition to the \texttt{consent} scope to check whether uploads may take place), whereas the \ref{itm:device-frontend} requires the \texttt{measurement-read} scope to retrieve individual measurements for display. These scopes may be granted based on the user's group or other metadata which is encoded in a certificate~\cite[p.~1]{butt2004certificate}.
+	Scopes support the principle of least privilege. For instance, the \ref{itm:data-transmitter} only needs the \texttt{measurement-write} scope to perform its primary task of uploading measurements (in addition to the \texttt{consent} scope to check whether uploads may take place), whereas the \ref{itm:device-frontend} requires the \linebreak \texttt{measurement-read} scope to retrieve individual measurements for display. These scopes may be granted based on the user's group or other metadata which is encoded in a certificate~\cite[p.~1]{butt2004certificate}.
 \FloatBarrier
 
 \end{description}
@@ -326,7 +328,7 @@ Recalling the fact that the application layer is responsible for ensuring a cons
 
 \FloatBarrier
 
-Given these codes, the component will store the relevant measurement data as a \acs{JSON} array of objects that map each observed \acs{OBIS} code to the value observed for that code. However, because the \acs{OBIS} short code is not uniquely identifiable~\footnote{\ac{OBIS} short codes do not carry the physical medium and channel from which data was generated \cite{iec2017obis}.}, the hexadecimal representation shall be used.
+Given these codes, the component will store the relevant measurement data as a \acs{JSON} array of objects that map each observed \acs{OBIS} code to the value observed for that code. However, because the \acs{OBIS} short code is not uniquely identifiable~\footnote{\ac{OBIS} short codes do not carry the physical medium and channel from which data was generated~\cite{iec2017obis}.}, the hexadecimal representation shall be used.
 
 
 \subsubsection{Control Flow}
@@ -371,6 +373,8 @@ For these tasks, an extensive amount of infrastructure, tools and expertise can 
 
 \paragraph{\ref*{itm:device-frontend} Considerations}
 It shall be noted that \acl*{JS} lacks \acsp{API} to comfortably interact with a browser's client certificate store. For instance, it is not possible to implement a logout functionality that clears the current session's certificate choice \cite[p.~8]{parsovs2013practical}. Such functionality, however, is required in client-side web applications, such as the \ref{itm:device-frontend}, which should be protected from unauthorized access. Moreover, using certificate-based authentication in such applications assumes that users have access to certificates. In this application context, however, certificates are only embedded in measurement devices. And since these measurement devices are headless (comp.~\autoref{sec:survey-overview}), participants will be required to use another, separate device to access the \ref{itm:device-frontend}. This problem can be solved by either:
+
+\newpage
 
 \begin{itemize}
   \item sharing the certificate with the participant, so that he can add it to each of the devices used to access the frontend
@@ -458,6 +462,7 @@ To hide this complexity and thus, streamline application code, the interaction (
 
 In light of the lengthy discussion on the benefits of containerized applications in \autoref{sec:docker} and \autoref{sec:shift-to-container-workloads}, it should come as no surprise that this system will fully embrace containers as the deployment target and medium of choice. This choice is also a major enabler to the system's portability since containers are not bound to a specific hardware platform. They only need to be compatible with the host's kernel and \acs{CPU} architecture (comp.~\autoref{sec:os-hardware-virtualization-comparison}). On the other hand, to simplify the management of these containers, the system will rely on a container orchestration platform as was presented in \autoref{sec:container-orchestration-platform}.
 
+\newpage
 
 \subsection{Target Hardware}
 \label{sec:deployment-target-hardware}
@@ -467,7 +472,7 @@ A brief overview of the currently targeted hardware and thus, \acs{CPU} architec
 \begin{description}
   \item[Edge]
   \hfill \\
-  Each measurement device shall be realized on the basis of a Raspberry Pi 4 Model B with \SI{4}{\giga\byte} of memory. This single-board computer is equipped with a 64-bit quad-core Cortex-A72 processor that is based on version 8 of the \acs{ARM} instruction set architecture (\texttt{armv8}) \cite{raspberrypi4} \cite{arm2020v8a}. In this price range, most devices run on \acs{ARM}. Therefore, this will be the primary target architecture going forward~\footnote{Usage of the \acs{ARM} architecture generally also leads to more power-efficient designs, which is a valuable trait considering that measurement devices will run on a household's own electricity \cite[p.~8837]{morabito2017virtualization}.}.
+  Each measurement device shall be realized on the basis of a Raspberry Pi 4 Model B with \SI{4}{\giga\byte} of memory. This single-board computer is equipped with a 64-bit quad-core Cortex-A72 processor that is based on version 8 of the \acs{ARM} instruction set architecture (\texttt{armv8}) \cite{raspberrypi4} \cite{arm2020v8a}. In this price range, most devices run on \acs{ARM}. Therefore, this will be the primary target architecture going forward~\footnote{Usage of the \acs{ARM} architecture generally also leads to more power-efficient designs, which is a valuable trait considering that measurement devices will run on a household's own electricity~\cite[p.~8837]{morabito2017virtualization}.}.
 
   \item[Cloud]
   \hfill \\
@@ -588,6 +593,8 @@ It is clear that the system's effectiveness depends on the cyber-physical intera
 \FloatBarrier
 
 The control flow of this monitoring measure is rather simple. Upon initialization, the \ref{itm:data-aggregator} will fetch the list of incidents previously reported for each of the meters connected to the device. If that specific type of incident has already been reported or resolved, respectively, the \ref{itm:data-api} will take no action. If, however, a previously resolved incident is reported again, the case will be re-opened. This effectively means that there will be no history of incidents, although that can be easily changed by simply appending to the list of incidents instead of modifying existing instances.
+
+\newpage
 
 \autoref{fig:data-api-erm-meter-incident} showcases how incidents will be modeled on sides of the \ref{itm:data-api}.
 

@@ -22,12 +22,17 @@ Derived from several other pre-existing architectures \cite[p.~76]{fielding2000a
 	\item[Client-server]
 	\hfill \\
 	The principle of separation of concerns allows components to evolve independently. By splitting the user interface engine concerns (\textit{client}) from data storage concerns (\textit{server}), portability and scalability improve \cite[p.~78]{fielding2000architectural}.
+
 	\item[Stateless]
 	\hfill \\
 	Each interaction (\textit{request}) between client and server must contain enough information to be processed in isolation (\textit{self-descriptiveness}) \cite[pp.~78--79]{fielding2000architectural}. In turn, this enables parallel processing and allows intermediaries (\textit{proxy}) to view and understand a request without accessing server context (\textit{session state}). Server-side scalability also improves as no resources have to be dedicated to storing state in-between requests \cite[pp.~79, 93]{fielding2000architectural}. By nature, this has the design trade-off of increasing repetitive-data and thus, decreasing network performance.
+
+\newpage
+
 	\item[Cache]
 	\hfill \\
 	Data returned by a server (\textit{response}) may be implicitly or explicitly labeled as cacheable or non-cacheable. In some cases, the cache may entirely eliminate interactions, again improving efficiency, scalability, and user-perceived performance, though caution must be taken since reliability issues may arise through stale data \cite[pp.~79--80]{fielding2000architectural}.
+
 	\item[Uniform interface]
 	\hfill \\
 	While a standardized component interaction interface simplifies the overall system architecture, it disregards the efficiency improvements that can be gained from an application-level decision of such \cite[pp.~81--82]{fielding2000architectural}. The exact communication constraints are discussed in the next section.
@@ -84,13 +89,13 @@ It shall be noted that a message originating from a client component may include
   	\label{tab:rest-message-fields}
 \end{table}
 
-The final constraint to component interaction is a concept called \acl*{HATEOAS} \cite[p.~82]{fielding2000architectural}. Even though \citeauthor{fielding2000architectural}'s dissertation did not fully elaborate on this aspect, he re-emphasized its importance in the coming years and would not accept an \acs{API}'s \textit{\ac{REST}ful} labelling if absent \cite{fielding2008hypertext}. In essence, an application's control state must be included in the resource representation returned by a server \cite[p.~102]{fielding2000architectural}, thereby explicitly stating the actions a client may perform on that resource at that specific point in time. Of course, the list of permitted actions could change in response to any actions that were taken previously.
+The final constraint to component interaction is a concept called \acl*{HATEOAS} \cite[p.~82]{fielding2000architectural}. Even though \citeauthor{fielding2000architectural}'s dissertation did not fully elaborate on this aspect, he re-emphasized its importance in the coming years and would not accept an \acs{API}'s \textit{\ac{REST}ful} labelling if absent~\cite{fielding2008hypertext}. In essence, an application's control state must be included in the resource representation returned by a server \cite[p.~102]{fielding2000architectural}, thereby explicitly stating the actions a client may perform on that resource at that specific point in time. Of course, the list of permitted actions could change in response to any actions that were taken previously.
 
 
 \section{Continuous Integration and Deployment}
 \label{sec:continuous-integration-deployment}
 
-Agile software development welcomes changing requirements, even late in the development. This, combined with the proclaimed goal of wanting to satisfy customers through early and continuous delivery of software has lead organizations to adopt practices known as \ac*{CI/CD} \cite{beck2001manifesto} \cite[p.~22]{savor2016continuous} \cite[p.~78]{virmani2015understanding}. This section explains each practice, as well as the value it adds to the software development lifecycle.
+Agile software development welcomes changing requirements, even late in the development. This, combined with the proclaimed goal of wanting to satisfy customers through early and continuous delivery of software has lead organizations to adopt practices known as \ac*{CI/CD}~\cite{beck2001manifesto} \cite[p.~22]{savor2016continuous} \cite[p.~78]{virmani2015understanding}. This section explains each practice, as well as the value it adds to the software development lifecycle.
 
 
 \subsection{\acl{CI}}
@@ -105,7 +110,7 @@ Agile software development welcomes changing requirements, even late in the deve
   \item prevent cumulative failures (where one bug appears as the result of another)
 \end{itemize}
 
-However, the degree of these benefits is directly tied to the depth of the test suite and the degree of similarity between the environment in which the results were generated and the one to which the software will ultimately be deployed. Every difference introduces the chance that what happens during a test will not happen in production \cite[pp.~9,~12]{fowler2006continuous}.
+However, the degree of these benefits is directly tied to the depth of the test suite and the degree of similarity between the environment in which the results were generated and the one to which the software will ultimately be deployed. Every difference introduces the chance that what happens during a test will not happen in production~\cite[pp.~9,~12]{fowler2006continuous}.
 
 Although \ac{CI} requires no particular tooling, many organizations leverage a so-called \ac{CI} server to monitor code repositories for changes. With each commit, the server will checkout the source code, initiate a build and publicly display the integration status. It is exactly this automatism that differentiates \ac{CI} from traditional builds which are performed on a timed schedule. The latter will, by definition, always delay detection of errors \cite[pp.~7,~10]{fowler2006continuous}.
 
