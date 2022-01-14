@@ -19,49 +19,41 @@
 
 \begin{document}
 
+    % Vorwerk Einstellungen	
+	\pagenumbering{Roman}
+	\pagestyle{plain}		% nur Seitenzahlen im Fuß
+	\RedeclareSectionCommand[beforeskip=\kapitelabstand]{chapter} % stellt Abstand vor Kapitelüberschriften ein
+
 	% Deckblatt
 	\begin{spacing}{1}
 		\input{ads/01_cover}
+		\clearpage
 	\end{spacing}
-	\newpage
 
-	\pagenumbering{Roman}
-
-	% Sperrvermerk
+%	% Sperrvermerk
 %	\input{ads/02_confidentiality}
-%	\newpage
+%	\clearpage
 
 	% Erklärung
 	\input{ads/03_authorship}
-	\newpage
+	\clearpage
 
-	% Vorwort
+%	% Vorwort
 %	\input{ads/04_preface}
-%	\newpage
+%	\clearpage
 
 	% Abstract
+	\cleardoublepage
 	\input{ads/05_abstract}
-	\newpage
-
-	\pagestyle{plain}		% nur Seitenzahlen im Fuß
-
-	\RedeclareSectionCommand[beforeskip=\kapitelabstand]{chapter} % stellt Abstand vor Kapitelüberschriften ein
 
 	% Inhaltsverzeichnis
 	\begin{spacing}{1.1}
 		\begingroup
-
-			% auskommentieren für Seitenzahlen unter Inhaltsverzeichnis
-			\renewcommand*{\chapterpagestyle}{empty}
-			\pagestyle{empty}
-
+			\cleardoublepage
 			\setcounter{tocdepth}{2}
-
 			\tableofcontents
-			\clearpage
 		\endgroup
 	\end{spacing}
-	\newpage
 
 	% Abkürzungsverzeichnis
 	\cleardoublepage
@@ -79,32 +71,44 @@
 %	\cleardoublepage
 %	\lstlistoflistings
 
+	% Hauptteil Einstellungen	
 	\cleardoublepage
 	\pagenumbering{arabic}
 	\pagestyle{headings}		% Kolumnentitel im Kopf, Seitenzahlen im Fuß
 
 	% Inhalt
+	\cleardoublepage
 	\input{content/01_introduction}
-	\input{content/02_theoretical_framework}
-	\input{content/03_concept}
-	\input{content/04_architecture}
-%	\input{content/05_implementation}
-%	\input{content/06_testing}
-	\input{content/07_conclusion}
-	\input{content/08_summary}
-	\input{content/09_outlook}
 
-	\clearpage
+	\cleardoublepage
+	\input{content/02_theoretical_framework}
+
+	\cleardoublepage
+	\input{content/03_concept}
+
+	\cleardoublepage
+	\input{content/04_architecture}
+
+	\cleardoublepage
+	\input{content/07_conclusion}
+
+	\cleardoublepage
+	\input{content/08_summary}
+
+	\cleardoublepage
+	\input{content/09_outlook}
 
 	% Literaturverzeichnis
 	\cleardoublepage
 	\printbibliography
+	\clearpage
 
 	% Glossar
 	\printglossary[style=altlist,title=\langglossar]
-
-	% sonstiger Anhang
 	\clearpage
+
+	% Anhang
 	\input{ads/07_appendix}
+	\clearpage
 
 \end{document}
