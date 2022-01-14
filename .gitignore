@@ -11,3 +11,4 @@ output/
 missfont.log
 *.pdf
 !thesis.pdf
+!exposé.pdf

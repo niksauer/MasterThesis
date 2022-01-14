@@ -1,0 +1,91 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{csquotes}
+
+\begin{document}
+
+%\section{Problemlage/Motivation}
+%\section{Ziel der Arbeit}
+%\section{Einzusetzende Methoden}
+%\section{Erwartete Ergebnisse}
+
+\section{Introduction}
+
+% Darstellung des Themas der Masterarbeit
+% Begründung / Motivation
+% Relevanz
+
+The EnergieBroker Platform is a novel idea developed to make small-scale photovoltaic and wind turbine systems attractive even after they have become ineligible for receiving a guaranteed feed-in tariff from the German government. It attempts to establish private, autonomous marketplaces for renewable energy at which even small amounts can be traded cheaply and hopefully, more profitably compared to regular energy exchanges.
+
+To support the ongoing research in this undertaking, a data set shall be created which primarily details to what extent private households equipped with photovoltaic systems:
+
+\begin{itemize}
+  \item feed generated energy into the grid 
+  \item obtain energy from the grid
+  \item store energy in a home battery (if present)
+%  \item consume energy (e.g. to charge an EV, to operate a heat pump)
+\end{itemize}
+
+This data shall be continuously captured at source, i.e. each of the participating households, and then periodically transmitted to a centralized data store which is controlled by the university. Data capture, transmission and storage shall happen securely and be in compliance with local data protection laws. Further, participating households shall be able to revoke their consent to data collection and personalized processing at all times. Yet, to ensure that the data can still be used for research purposes afterwards, a method to anonymize the data shall also be planned for.
+
+
+\section{Goals and Scope}
+
+% Ziel der Arbeit und Erkenntnisinteresse herausstellen
+% Ergebnisse skizzieren
+
+This thesis is concerned with the design, implementation and testing of a system that can be used to collect and store the data in adherence to the requirements presented beforehand. It does not cover the process of selecting households, nor does it attempt to estimate the costs for operating such a system or draw any conclusions from the collected data itself. In short, the goals and scope of this thesis are the:
+
+\begin{itemize}
+  \item requirements engineering
+  \item component design and mapping of requirements thereto
+  \item production-grade implementation
+  \item deployment and maintenance plan design
+  \item field test
+\end{itemize}
+
+
+\section{Expected Results}
+
+The minimum set of products that shall emerge from this thesis may be explained as following:
+
+\subsection{Hardware Device}
+
+In order to capture energy-related stats, a hardware device, presumably from the Raspberry Pi ecosystem, will be installed in each participating household~\footnote{Multiple hardware devices shall be installed in a single household if multiple meters need to be read out that are physically separated from each other. The architecture devised as part of the thesis shall account for such a setup.}. This device shall be equipped with a measuring probe that can read the light signal of an electricity meter or a photovoltaic system's generation meter. Given this probe, a software solution shall be developed to continuously make measurements and transmit them to the central data store. 
+
+On the other hand, this hardware device shall expose a web interface which allows a household to~\footnote{The web interface shall only be reachable within the household's local network and be secured to prevent access from non-participants.}:
+
+\begin{itemize}
+  \item view their master data (e.g. contact info, location)
+  \item view the transmitted raw data
+  \item modify their consent to data collection
+\end{itemize}
+
+\subsection{Data Backend}
+
+A web service shall be developed that:
+
+\begin{itemize}
+  \item persists raw data transmitted by a hardware device
+  \item returns all data associated with the requesting household
+  \item stores a household's consent to data collection and triggers the necessary processes on revocation (e.g. data deletion and anonymization)
+\end{itemize}
+
+This service shall be protected against unauthorized access and data leaks. It shall be ensured that only verified hardware devices can transmit data or alter the consent to data collection. 
+
+\subsection{Management Dashboard}
+
+To aid in maintenance and remote support, another web interface shall be developed that:
+
+\begin{itemize}
+  \item displays each hardware device's health and consent status
+  \item allows access to a hardware device's logs
+  \item explains how a hardware device may be updated and connected to
+\end{itemize}
+
+
+\section{Relevant Literature}
+
+Keywords: \enquote{\texttt{Open Data Publication}}, \enquote{\texttt{GDPR}}, \enquote{\texttt{D0 Interface}}, \enquote{\texttt{Smart Meter Language}}, \enquote{\texttt{Time Series Database}}, \enquote{\texttt{Single Page Application}}, \enquote{\texttt{Distributed System}}, \enquote{\texttt{Master/Slave Model}}, \enquote{\texttt{Web Service}}, \enquote{\texttt{REST API}}, \enquote{\texttt{Reverse SSH}}
+
+\end{document}
