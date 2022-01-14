@@ -303,7 +303,7 @@ A container orchestration platform can be broadly defined as a system that provi
 
   \item[Monitoring]
   \hfill \\
-  Platforms should facilitate monitoring across two contexts. First, the cluster infrastructure needs to be observed for resource utilization and draining. Secondly, container activity must be made visible by aggregating logs and performance metrics, as well as allowing \gls{white-box tracing} of requests \cite[p.~47]{khan2017key}.
+  Platforms should facilitate monitoring across two contexts. First, the cluster infrastructure needs to be observed for resource utilization and draining. Secondly, container activity must be made visible by aggregating logs and performance metrics, as well as allowing requests to be traced across containers~\cite[p.~47]{khan2017key}.
 \end{description}
 
 Next to these basic capabilities, platforms may further implement a slew of features across domains such as security, networking or maintenance. As an example, platforms could provide role-based access control for containers, allow configuring \acs{MAC} (see~\autoref{sec:linux-kernel-containment-features}) on a per container basis, scan container images for vulnerabilities (see~\autoref{sec:docker}), add support for the service registry pattern (see~\autoref{sec:service-registry-pattern}) or enable cluster-wide backups.
