@@ -77,13 +77,15 @@ It shall be noted that a message originating from a client component may include
 
 \begin{table}[hbt]
 	\centering
-  	\begin{tabular}{l|c|c}
-	    Field & Request Message & Response Message \\
+  	\begin{tabular}{|l|c|c|}
+  		\hline
+	    \textbf{Field} & \textbf{Request Message} & \textbf{Response Message} \\
 	    \hline
 	    Resource Identifier 	& x & - \\
 	    Representation 			& optional & optional \\
 	    Resource Metadata 		& - & optional \\
 	    Control Data 			& x & x \\
+	    	\hline
 	\end{tabular}
   	\caption{In- and out-parameters of a \acs*{REST} component interaction}
   	\label{tab:rest-message-fields}
