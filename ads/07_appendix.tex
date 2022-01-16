@@ -10,7 +10,7 @@
 
 Coined and theorized by \citeauthor{fielding2000architectural}, \ac{REST} stands for an architectural style of distributed hypermedia systems that was motivated by the need to create a model for how the modern web should work, thereby serving as the guiding framework for web protocol standards such as \acs{HTTP} and \acs{URI} \cite[pp.~76,~107]{fielding2000architectural}.
 
-Like any software architecture, this named set of constraints intends to outline how a well-designed network-based application behaves, i.e. how the system is partitioned and how components communicate \cite[p.~xvi]{fielding2000architectural}, rather than deciding on the protocol selection or focusing on implementation details and syntax \cite[pp.~86,~109]{fielding2000architectural}.
+Like any software architecture, this named set of constraints intends to outline how a well-designed network-based application behaves, i.e.~how the system is partitioned and how components communicate \cite[p.~xvi]{fielding2000architectural}, rather than deciding on the protocol selection or focusing on implementation details and syntax \cite[pp.~86,~109]{fielding2000architectural}.
 
 
 \subsection{Concepts}
@@ -46,12 +46,12 @@ The key abstraction in \ac{REST} is a \textit{resource} which refers to any kind
 
 \begin{itemize}
   \item document or image
-  \item temporal service (e.g. the current weather in Berlin)
+  \item temporal service (e.g.~the current weather)
   \item collection of resources
-  \item non-virtual object (e.g. a student)
+  \item non-virtual object (e.g.~a student)
 \end{itemize}
 
-A resource's value may be static or variable (document vs. current weather), though in any case the semantics, i.e. what distinguishes one resource from another, must remain the same \cite[p.~89]{fielding2000architectural}.
+A resource's value may be static or variable (e.g.~document vs. current weather), though in any case the semantics, i.e.~what distinguishes one resource from another, must remain the same \cite[p.~89]{fielding2000architectural}.
 
 From here on, \citeauthor{fielding2000architectural} explains that \ac{REST} components perform actions on a resource by exchanging stateless messages composed of \cite[pp.~90--91]{fielding2000architectural}:
 
@@ -61,7 +61,7 @@ From here on, \citeauthor{fielding2000architectural} explains that \ac{REST} com
 	Unique identifier used to address that particular resource.
 	\item[Representation]
 	\hfill \\
-	Depending on the \textit{control data}, the representation may capture the current or intended state of a requested resource, value of a different resource (e.g. user input) or an error condition.
+	Depending on the \textit{control data}, the representation may capture the current or intended state of a requested resource, value of a different resource (e.g.~user input) or an error condition.
 	\item[Representation metadata]
 	\hfill \\
 	Describes the supplied representation.
@@ -116,7 +116,7 @@ However, the degree of these benefits is directly tied to the depth of the test 
 
 Although \ac{CI} requires no particular tooling, many organizations leverage a so-called \ac{CI} server to monitor code repositories for changes. With each commit, the server will checkout the source code, initiate a build and publicly display the integration status. It is exactly this automatism that differentiates \ac{CI} from traditional builds which are performed on a timed schedule. The latter will, by definition, always delay detection of errors \cite[pp.~7,~10]{fowler2006continuous}.
 
-Lastly, \citeauthor{fowler2006continuous} emphasizes that build pipelines must balance the breadth of bug finding techniques (e.g. static code analysis) with the need for speed, i.e. how long it will take to run a build~\footnote{\ac{CI} originated as one of the twelve original practices of \ac*{XP}. Another practice of \acs*{XP} advocates keeping build times under ten minutes \cite[pp.~2,~8]{fowler2006continuous}.}. More in-depth tests may, for example, be moved to a secondary test suite that is not run on every commit. Builds could also be configured to only run against modified components \cite[pp.~5,~8]{fowler2006continuous}.
+Lastly, \citeauthor{fowler2006continuous} emphasizes that build pipelines must balance the breadth of bug finding techniques (e.g.~static code analysis) with the need for speed, i.e.~how long it will take to run a build~\footnote{\ac{CI} originated as one of the twelve original practices of \ac*{XP}. Another practice of \acs*{XP} advocates keeping build times under ten minutes \cite[pp.~2,~8]{fowler2006continuous}.}. More in-depth tests may, for example, be moved to a secondary test suite that is not run on every commit. Builds could also be configured to only run against modified components \cite[pp.~5,~8]{fowler2006continuous}.
 
 
 \subsection{\acl{CD}}
@@ -131,9 +131,9 @@ Whereas \ac{CI} purely focuses on the integration of changes, \ac{CD} extends th
   \item prevents a disconnect between the development and operations teams
 \end{itemize}
 
-Admittedly, most organizations will, however, settle on a less continuous process for reasons such as industry regulations (e.g. automotive software), distribution channels (e.g. review process of application store) or pure customer preference \cite[pp.~68--69]{leppanen2015highways}. As an example, web-based applications will be more suitable for \ac{CD} than off-the-shelve software because updates can happen in a largely transparent manner to the user~\footnote{\ac*{HP} even practices \ac{CD} with its printer firmware. The author of this thesis was formerly employed at \acs*{HP} and remembers this fact being shared as if it were a secret family recipe.} \cite[p.~22]{savor2016continuous}. In such situations where immediate deployments are not exercised but a company is still ready to reliably release its software on demand, literature refers to the same acronym as Continuous Delivery \cite[p.~50]{chen2015continuous}.
+Admittedly, most organizations will, however, settle on a less continuous process for reasons such as industry regulations (e.g.~automotive software), distribution channels (e.g.~review process of application store) or pure customer preference \cite[pp.~68--69]{leppanen2015highways}. As an example, web-based applications will be more suitable for \ac{CD} than off-the-shelve software because updates can happen in a largely transparent manner to the user~\footnote{\ac*{HP} even practices \ac{CD} with its printer firmware. The author of this thesis was formerly employed at \acs*{HP} and remembers this fact being shared as if it were a secret family recipe.} \cite[p.~22]{savor2016continuous}. In such situations where immediate deployments are not exercised but a company is still ready to reliably release its software on demand, literature refers to the same acronym as Continuous Delivery \cite[p.~50]{chen2015continuous}.
 
-Irrespective of the level practiced, the pipelines used for these purposes (comp.~\autoref{sec:continuous-integration}) will likely be extended with more tests (e.g. system and performance), as well as methods to roll back releases on failures \cite[pp.~52--53]{chen2015continuous}. \ac{CD} can of course also be combined with advanced deployment strategies such as using a secondary environment for beta testing (\textit{staging}), switching traffic between two identical environments as testing completes (\textit{blue / green}) or releasing changes off peak or out of user reach to test scalability and performance (\textit{dark launch}) \cite[p.~23]{savor2016continuous}.
+Irrespective of the level practiced, the pipelines used for these purposes (comp.~\autoref{sec:continuous-integration}) will likely be extended with more tests (e.g.~system and performance), as well as methods to roll back releases on failures \cite[pp.~52--53]{chen2015continuous}. \ac{CD} can of course also be combined with advanced deployment strategies such as using a secondary environment for beta testing (\textit{staging}), switching traffic between two identical environments as testing completes (\textit{blue / green}) or releasing changes off peak or out of user reach to test scalability and performance (\textit{dark launch}) \cite[p.~23]{savor2016continuous}.
 
 
 \chapter{Concept}
