@@ -506,6 +506,7 @@ A major objective of this thesis is the design of a maintenance and support plan
 
 
 \subsection{Remote Updates}
+\label{sec:remote-updates}
 
 While it is easy to see how the initial setup of a measurement device and deployment of the services running on it may happen on the basis of a custom system image, it is less clear how these components will be updated once the device has been installed in a household. For this, a high-level understanding of a deployment in Kubernetes is needed.
 
@@ -530,6 +531,7 @@ Two additional advantages of this approach shall be noted. Firstly, the workflow
 
 
 \subsection{Remote Access}
+\label{sec:remote-access}
 
 For debugging purposes and other maintenance activities, it will be necessary to remotely connect to measurement devices via \acs{SSH}. However, because these devices will be situated on a network whose firewall only allows outbound connections, i.e.~the household's \acs{LAN}, direct access (\textit{forward connection}) will not be possible. Besides, it is unlikely that the household will have a publicly reachable \acs{IP} address~\footnote{\acsp{ISP} use \acs{NAT} to route traffic from the internet to their customers who have been assigned private \acs{IP} addresses. The reason why customers have been given these addresses is due to the limited amount of public \acs{IP}v4 addresses. \acs{IP}v6 may change this situation with its 128-bit (versus 32-bit) address space.}. Such (static) public \acsp{IP} are usually reserved for commercial internet plans. Instead, a \textit{reverse connection} approach will be used as is shown in \autoref{fig:remote-ssh-tunnel}.
 

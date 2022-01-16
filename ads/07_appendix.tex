@@ -149,6 +149,83 @@ Irrespective of the level practiced, the pipelines used for these purposes (comp
 \FloatBarrier
 
 
+\chapter{Conclusion and Discussion}
+\label{app:conclusion}
+
+\begin{table}[hbt]
+	\centering
+  	\begin{tabularx}{\textwidth}{|c|X|r|c|c|c|}
+		\hline
+		\textbf{\#} & \textbf{Model} & $\textbf{MTF~(\%)}$ & ${\overline{\textbf{MC}}}$ & $\widetilde{\textbf{MC}}$ & $\boldsymbol{\sigma}$ \\
+	    	\hline
+	    1 	& \texttt{MT681} 	& 100.05 	& 14.97 & 15.00 & 0.53 \\ % 9726d053-c781-4f22-b7ba-b362db1c71a9
+	    	\hline
+	    	2 	& \texttt{EHZ}		& 99.70	 	& 15.03 & 15.05 & 0.33 \\ % 1318c488-ffe4-4c58-b37d-f9b4c699ae63
+	    	\hline
+	    	3 	& \texttt{MT175}	& 99.95 	& 14.99 & 15.00 & 0.48 \\ % e0eeba5e-54a8-4010-8734-653473dde0c2
+	    \hline
+	    	4 	& \texttt{EHZ}		& 99.90 	& 15.01 & 15.02 & 0.02 \\ % d8e5eaa0-f0cb-4cbb-afe5-032d04ad7780
+	    	\hline
+	    5 	& \texttt{MT175}	& 103.18 	& 14.52 & 15.00 & 2.21 \\ % 1c988a13-d395-412f-afc1-f4a0e2985e8a
+	    	6 	& \texttt{MT175}	& 103.23 	& 14.51 & 15.00 & 2.22 \\ % b319ff58-4d7b-434d-bebc-3a209cfa8985
+	    	\hline
+	    7 	& \texttt{EHZ}		& 100.15 	& 14.96 & 15.02 & 0.79 \\ % 6b4c8844-d7c1-422e-8a08-90aebe9a2fe0
+	    \hline
+	    	8 	& \texttt{EHZ}		& 100.60 	& 14.89 & 15.02 & 1.02 \\ % 55c9544f-9a34-4474-933e-b553d851c51b
+	    	\hline
+	    9 	& \texttt{EHZ} 		& 103.57 	& 14.45 & 15.00 & 2.34 \\ % 6b442b0f-a813-463e-8976-6f79369c26b4
+	    	10 	& \texttt{MT175}	& 101.98 	& 14.69 & 15.00 & 1.82 \\ % f3c3bf48-d1cf-43bd-9b4c-8c4f63a8fd6a
+	    	\hline
+	    	\hline
+	    	& & \textbf{101.23} & \textbf{14.80} & \textbf{15.01} & \textbf{1.18}  \\
+	    	\hline
+	\end{tabularx}
+  	\caption[Measurement statistics, grouped by measurement device]{Measurement target fulfillment ($\text{MTF}$) and measurement cycle ($\text{MC}$) statistics over past three weeks of operations, grouped by measurement device~\footnotemark}
+  	\label{tab:measurement-cycle-statistics}
+\end{table}
+
+\footnotetext{The mean across all statistics can be taken in this case because the sample size is expected to be the same for each measurement device.}
+
+\FloatBarrier
+\newpage
+
+\begin{table}[hbt]
+	\centering
+  	\begin{tabularx}{\textwidth}{|X|r|c|c|c|c|c|c|}
+		\hline
+		\textbf{\#}  & $\textbf{RTF}~(\%)$ & $\overline{\textbf{RC}}$ & $\widetilde{\textbf{RC}}$ & $\boldsymbol{\sigma}$ & $\overline{\textbf{MPR}}$ & $\widetilde{\textbf{MPR}}$ & $\boldsymbol{\sigma}$ \\
+	    	\hline
+	    1 	& 100.00 	& 60.00 & 60.00 & 0.00 & 4.00 & 4.00 & 0.12 \\ % 9726d053-c781-4f22-b7ba-b362db1c71a9
+	    	\hline
+	    	2 	& 100.00	& 60.00 & 60.00 & 0.00 & 3.99 & 4.00 & 0.15 \\ % 1318c488-ffe4-4c58-b37d-f9b4c699ae63
+	    	\hline
+	    	3 	& 100.00 	& 60.00 & 60.00 & 0.00 & 4.00 & 4.00 & 0.13 \\ % e0eeba5e-54a8-4010-8734-653473dde0c2
+	    \hline
+	    	4 	& 100.00 	& 60.00 & 60.00 & 0.00 & 3.99 & 4.00 & 0.11 \\ % d8e5eaa0-f0cb-4cbb-afe5-032d04ad7780
+	    	\hline
+	    5 	& 100.00	& 60.00 & 60.00 & 0.38 & 4.12 & 4.00 & 0.39 \\ % 1c988a13-d395-412f-afc1-f4a0e2985e8a
+	    	6 	& 100.00 	& 60.00 & 60.00 & 0.38 & 4.13 & 4.00 & 0.38 \\ % b319ff58-4d7b-434d-bebc-3a209cfa8985
+	    	\hline
+	    7 	& 100.00	& 60.00 & 60.00 & 0.38 & 4.01 & 4.00 & 0.18 \\ % 6b4c8844-d7c1-422e-8a08-90aebe9a2fe0
+	    \hline
+	    	8 	& 100.00 	& 60.00 & 60.00 & 0.00 & 4.02 & 4.00 & 0.22 \\ % 55c9544f-9a34-4474-933e-b553d851c51b
+	    	\hline
+	    9 	& 100.00 	& 60.00 & 60.00 & 0.00 & 4.14 & 4.00 & 0.42 \\ % 6b442b0f-a813-463e-8976-6f79369c26b4
+	    	10 	& 100.00 	& 60.00 & 60.00 & 0.00 & 4.08 & 4.00 & 0.34 \\ % f3c3bf48-d1cf-43bd-9b4c-8c4f63a8fd6a
+	    	\hline
+	    	\hline
+	    	& \textbf{100.00} & \textbf{60.00} & \textbf{60.00} & \textbf{0.11} & \textbf{4.05} & \textbf{4.00} & \textbf{0.24} \\
+	    	\hline
+	\end{tabularx}
+  	\caption[Report statistics, grouped by measurement device]{Report target fulfillment ($\text{RTF}$), report cycle ($\text{RC}$) and measurements per report ($\text{MPR}$) statistics over past three weeks of operations, grouped by measurement device~\footnotemark}
+  	\label{tab:report-cycle-statistics}
+\end{table}
+
+\footnotetext{The mean across all statistics can be taken in this case because the sample size is expected to be the same for each measurement device.}
+
+\FloatBarrier
+
+
 \chapter{List of CD Contents}
 \label{app:cd-contents}
 
@@ -179,6 +256,9 @@ Irrespective of the level practiced, the pipelines used for these purposes (comp
 	\> \> -- data-api-registration-frontend.zip \\
 	\> \> -- status-frontend.zip \\
 	\\
+	$\vdash$ \textbf{conclusion/} \\ 			
+	\> -- report.py 						\> \> $\Rightarrow$ \textit{Script used to calculate system availability} \\
+	\> -- output.txt \\
 \end{tabbing}
 
 \end{appendices}
