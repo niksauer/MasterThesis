@@ -3,16 +3,16 @@
 \chapter{Evaluation}
 \label{chp:conclusion}
 
-This thesis has carefully laid out a blueprint for constructing, deploying and operating a system that can be used as the backbone to the data collection survey presented in \autoref{sec:data-collection-survey}. Based on this blueprint, a production-grade implementation has been prepared in parallel and provided to the research group for both initial testing and actual use in the survey. To quantitatively asses the quality and readiness of its design, the measurements collected as part of a field test shall be evaluated against the core functional requirements of the system, which are (comp.~\autoref{sec:survey-overview}):
+This thesis has carefully laid out a blueprint for constructing, deploying and operating a system that can be used as the backbone to the data collection survey presented in \autoref{sec:data-collection-survey}. Based on this blueprint, a production-grade implementation has been prepared simultaneously and provided to the research group for both initial testing and actual use in the survey. To quantitatively asses the quality and readiness of its design, the measurements collected as part of a field test shall be evaluated regarding the core functional requirements of the system, which are (comp.~\autoref{sec:survey-overview}):
 
 \begin{enumerate}[label=(\Alph*)]
   \item taking measurements from multiple electricity and generation meters in a 15-minute interval (\textit{measurement cycle}) \label{itm:measurement-cycle}
   \item transmitting the observed measurements to a centralized data store in a \mbox{60-minute} interval (\textit{report cycle}) \label{itm:report-cycle}
 \end{enumerate}
 
-Because the contents of a measurement are already verified at the time of their creation (comp.~\ref{itm:data-aggregator} on \autopageref{itm:data-aggregator}), only the interval constraints listed above need to be checked for across the collected data set. At the same time, these interval constraints define the exact number of measurements and reports that should have been made for any given meter in a particular observation timeframe. It is simply the timeframe's duration in minutes divided by the respective interval length~\footnote{This calculation assumes that the time of the first measurement always aligns with the start of the observation timeframe. However, because measurement devices start independently from each other, the actual calculation should ensure that the difference in time between the observation timeframe's start and that of the first measurement is subtracted accordingly.}. In the following, \textit{target fulfillment} denotes the degree to which this is satisfied. Finally, \ref{itm:report-cycle} implies that, for any given meter, each report carries exactly four measurements. 
+Because the contents of a measurement will already have been verified at the time of their creation (comp.~\ref{itm:data-aggregator} on \autopageref{itm:data-aggregator}), only the interval constraints listed above need to be checked for across the collected data set. At the same time, these interval constraints implicitly define the exact number of measurements and reports that should have been made for any given meter in a particular observation time frame. It is simply the observation time frame's duration in minutes divided by the respective interval length~\footnote{This calculation assumes that the time of the first measurement always aligns with the start of the observation time frame. However, because measurement devices start independently from each other, the actual calculation should ensure that the difference in time between the observation time frame's start and that of the first measurement is subtracted accordingly.}. In the following paragraphs, \textit{target fulfillment} denotes the degree to which this is satisfied. Finally, \ref{itm:report-cycle} implies that, for any given meter, each report carries exactly four measurements.
 
-The data set for which these expectations are tested captures the past three weeks of system operations, i.e. exactly the timeframe since the last major component revision. It covers 10 meters across 8 distinct households and 3 meter models. As such, the body of analysis can be calculated as 20,160~measurements. \autoref{tab:measurement-report-cycle-mpr-statistics} and \autoref{tab:target-fulfillment} present the combined statistical results. A per-meter break-down is given in the \autoref{app:conclusion} on \cpageref{tab:measurement-cycle-statistics,tab:report-cycle-statistics}.
+Given the expectations described above, a data set collected from operating the system for three weeks, i.e. exactly the time frame since the last major component revision, can now be tested to see if it fulfills the claims. This data set covers ten meters across eight distinct households and three meter models. As such, the body of analysis can be calculated as 20,160~measurements. \autoref{tab:measurement-report-cycle-mpr-statistics} and \autoref{tab:target-fulfillment} present the combined statistical results. A per-meter break-down is given in the \autoref{app:conclusion} on \cpageref{tab:measurement-cycle-statistics,tab:report-cycle-statistics}.
 
 \begin{table}[hbt]
 	\centering
@@ -25,7 +25,7 @@ The data set for which these expectations are tested captures the past three wee
 	    	Measurements per report 	&  4.05 &  4.00 & 0.24 \\
 	    	\hline
 	\end{tabularx}
-  	\caption{Measurement and report cycle statistics over past three weeks of operations}
+  	\caption[Measurement and report cycle statistics over three weeks]{Measurement and report cycle statistics over three weeks of operations}
   	\label{tab:measurement-report-cycle-mpr-statistics}
 \end{table}
 
@@ -39,38 +39,38 @@ The data set for which these expectations are tested captures the past three wee
 	    	Report target fulfillment 				& 100.00 \% \\
 	    	\hline
 	\end{tabularx}
-  	\caption{Measurement and report target fulfillment over past three weeks of operations}
+  	\caption[Measurement and report target fulfillment over three weeks]{Measurement and report target fulfillment over three weeks of operations}
   	\label{tab:target-fulfillment}
 \end{table}
 
-The results are very promising as they suggest a near perfect level of system availability. This is especially true on sides of the \ref{itm:data-transmitter} and \ref{itm:data-api} since a missed, failed or rejected report would result in those measurements being transmitted upon the next scheduled iteration, leading to a lower report target fulfillment, which currently shows no decimal places before rounding. The slight variance in report cycles can be explained by the fact that the \ref{itm:data-transmitter} has been deployed as a Kubernetes \texttt{CronJob} whose status is only checked every 10 seconds \cite{kubernetesCronjob}. 
+The results are very promising as they suggest a near perfect level of system availability. This is especially true for the \ref{itm:data-transmitter} and \ref{itm:data-api} since a missed, failed or rejected report would result in those measurements being transmitted upon the next scheduled iteration, leading to a lower report target fulfillment which currently shows no decimal places before rounding. The slight variance in report cycles can be explained by the fact that the \ref{itm:data-transmitter} has been deployed as a Kubernetes \texttt{CronJob} whose status is only checked every 10 seconds \cite{kubernetesCronjob}.
 
-On the other hand, the results indicate that, on average, each meter has taken more measurements than necessary. This can be traced back to an overlook in the design of the \ref{itm:data-aggregator} which, upon failure, currently does not consider the date of the last measurement taken. Instead, it will immediately take another measurement, effectively ignoring the measurement cycle constraint between restarts and thus, producing a higher than expected count in measurements. This higher count also directly correlates with the higher than expected mean in measurements per report. 
+On the other hand, the results indicate that, on average, each meter has taken more measurements than necessary. This can be traced back to an overlook in the design of the \ref{itm:data-aggregator} which, upon failure, currently does not consider the date of the last measurement taken. Instead, it will immediately take another measurement, effectively ignoring the measurement cycle constraint between restarts and thus, producing a higher than expected count in measurements. This higher count also directly correlates with the higher than expected mean in measurements per report.
 
-While the these statistics in itself are promising, the system's quality shall further be evaluated in the context of the non-functional requirements set fourth in \autoref{sec:non-functional-requirements}:
+While these statistics in itself are promising, the system's quality shall ultimately be evaluated in the context of the non-functional requirements set forth in \autoref{sec:non-functional-requirements}:
 
 \begin{description}
   \item[Security (\ref{itm:nfr-security})]
   \hfill \\
-  \Cref{sec:data-api-access-control} introduced an extensive role-based access control model for the \ref{itm:data-api} that supports the principle of least privilege, allowing individual components to be restricted to the set of permissions needed to fulfill their tasks. As a bonus, the \ref{itm:data-api} is prepared for an ecosystem of community solutions that want to share data through means other than the measurement devices designed herein. For this purpose, it additionally implements a \acs{JWT}-based authentication solution~\footnote{\url{https://jwt.io/introduction}}. Beyond that, all communications, including the long-lived maintenance and support tunnel (see~\autoref{sec:remote-access}), are secured via \acs{TLS} and authenticated with proper credentials. 
-  
+  \Cref{sec:data-api-access-control} introduced an extensive role-based access control model for the \ref{itm:data-api} that supports the principle of least privilege, allowing individual components to be restricted to the set of permissions needed to fulfill their tasks. As a bonus, the \ref{itm:data-api} is prepared to accept data from sources other than the measurement devices designed in this project. This extension is supported by an additional \acs{JWT}-based authentication scheme~\footnote{\url{https://jwt.io/introduction}}. Beyond that, all communications, including the long-lived maintenance and support tunnel (see~\autoref{sec:remote-access}), are secured via \acs{TLS} and authenticated with proper credentials.
+
   \item[Scalability (\ref{itm:nfr-scalability})]
   \hfill \\
   While the edge of this system is limited to vertical scaling, the cloud is prepared to scale horizontally. This is facilitated by the use of a container orchestration platform which makes the management of a multi-node cluster largely opaque to the administrator (comp.~\autoref{sec:container-orchestration-platform-capabilities}). For long-running tasks, such as future data analytics, the current deployment also includes a distributed task queue~\footnote{\url{https://docs.celeryproject.org/en/stable/}}.
- 
+
   \item[Availability (\ref{itm:nfr-availability})]
   \hfill \\
-  To achieve a high availability, the system relies on both the cluster's self-healing capabilities, as well as more traditional replication techniques. The effectiveness and stability of the solution have largely been proven through the statistics presented at the beginning of this chapter.
-  
+  To achieve a high availability, the system relies on both the cluster's self-healing capabilities, as well as more traditional replication techniques. The effectiveness of these measures has largely been proven by the statistics presented at the beginning of this chapter.
+
   \item[Maintainability (\ref{itm:nfr-maintainability-documentation}, \ref{itm:nfr-maintainability-tools})]
   \hfill \\
-  In support of future development, all components have been implemented using a static type checker, linter and formatter. These tools enforce best practices and a common legible style across all code contributed. Dependencies have been carefully chosen for a high degree of developer support. Furthermore, these dependencies can be automatically updated when new releases are available, ensuring that critical security patches can distributed in a timely manner~\footnote{\url{https://github.blog/2020-06-01-keep-all-your-packages-up-to-date-with-dependabot/}}.
-    
+  In support of future development, all components have been implemented using a static type checker, linter and formatter. These tools enforce best practices and a common legible style across all code contributed. Dependencies have been carefully chosen for a high degree of developer support. Furthermore, these dependencies can automatically be updated when new releases are available, ensuring that critical security patches can be distributed in a timely manner~\footnote{\url{https://github.blog/2020-06-01-keep-all-your-packages-up-to-date-with-dependabot/}}.
+
   \item[Testability (\ref{itm:nfr-testability})]
   \hfill \\
-  A total of 114 tests have been devised and implemented for the \ref{itm:data-api}, each of which consist of several sub-conditions to be tested for. These tests are run on each new component revision (see~\nameref{sec:continuous-integration} on \autopageref{sec:continuous-integration})~\footnote{\url{https://github.com/features/actions}}, helping to detect regressions as soon as possible.
-  
+  A total of 114 tests have been devised and implemented for the \ref{itm:data-api}, each of which consist of several sub-conditions to be tested for. These tests are run on each new component revision (see~\nameref{sec:continuous-integration} on \autopageref{sec:continuous-integration})~\footnote{\url{https://github.com/features/actions}}. This practice helps to detect regressions as soon as possible.
+
   \item[Portability (\ref{itm:nfr-portability})]
   \hfill \\
-  The choice of containers as the deployment target and medium of choice largely enables effortless compatibility with a wide range of execution environments (comp.~\autoref{sec:os-hardware-virtualization-comparison}). More so, the project includes multi-architecture builds to be compatible with the two most popular \acs{CPU} architectures, i.e. \texttt{x86} and \texttt{ARM} (see \autoref{sec:deployment-target-hardware}). Besides that, Kubernetes is also offered as a managed service by all major cloud providers, allowing the cloud realm of this system to be hosted on a pay-per-use model~\footnote{\url{https://cloud.google.com/kubernetes-engine}}.
+  Using containers as the deployment target and medium of choice largely guarantees compatibility with a wide range of execution environments (comp.~\autoref{sec:os-hardware-virtualization-comparison}). Further, to be compatible with the two most popular \acs{CPU} architectures, i.e. x86 and \acs{ARM}, this project features multi-architecture builds (see \autoref{sec:deployment-target-hardware}).
 \end{description}
